@@ -61,8 +61,8 @@ class Club(models.Model):
     meeting_day = models.CharField(max_length = 15, null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
-    created_by = models.ForeignKey(User, related_name='club_created_by',on_delete=models.CASCADE)
-    updated_by = models.ForeignKey(User, related_name='club_updated_by',on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, related_name='club_created_by',on_delete=models.CASCADE, null = True, blank = True)
+    updated_by = models.ForeignKey(User, related_name='club_updated_by',on_delete=models.CASCADE, null = True, blank = True)
 
     def __str__(self):
         return self.name
