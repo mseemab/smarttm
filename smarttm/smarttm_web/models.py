@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -15,13 +15,14 @@ class UserManager(BaseUserManager):
         user = self.create_user(email, password)
         user.is_admin = True
         user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
     def get_by_natural_key(self, email_):
         return self.get(email=email_)
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     full_name = models.CharField(max_length = 200)
@@ -42,13 +43,16 @@ class User(AbstractBaseUser):
     REQUIRED_FIELDS = []
     objects = UserManager()
 
-    def has_perm(self, perm, obj=None):
-        return self.is_staff
+    def get_groups(self):
+        user_groups = self.groups.all()
+        groups_str = ""
+        for user_group in user_groups:
+            groups_str = groups_str + ' ' + user_group.name + ','
+        return groups_str 
 
-    def has_module_perms(self, app_label):
-        return self.is_staff
     def __str__(self):
         return self.full_name
+
 class Club(models.Model):
     club_number = models.CharField(max_length = 15, null = True, blank = True)
     name = models.CharField(max_length = 200)
@@ -62,6 +66,7 @@ class Club(models.Model):
 
     def __str__(self):
         return self.name
+
 class Position(models.Model):
     name = models.CharField(max_length = 50)
     seniority = models.IntegerField(default = 0)
