@@ -22,6 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '92cr79yilaogsoehdd4cl(znn0v*wbb!xvme6&g_gw&ivu&d$s'
 
+#AUTH_USER_MODEL
+
+AUTH_USER_MODEL = 'smarttm_web.User'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

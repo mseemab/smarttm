@@ -1,11 +1,32 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 # Create your models here.
 
-class User(models.Model):
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None):
+        if not email:
+            raise ValueError('Email must be set!')
+        user = self.model(email=email)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        user = self.create_user(email, password)
+        user.is_admin = True
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+    def get_by_natural_key(self, email_):
+        return self.get(email=email_)
+
+class User(AbstractBaseUser):
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     full_name = models.CharField(max_length = 200)
     address = models.CharField(max_length = 1000, null = True, blank = True)
-    email = models.CharField(max_length = 200, null = True, blank = True)
+    email = models.CharField(max_length = 200, unique= True)
     secondary_email = models.CharField(max_length = 200, null = True, blank = True)
     mobile_phone = models.CharField(max_length = 200, null = True, blank = True)
     home_phone = models.CharField(max_length = 200, null = True, blank = True)
@@ -17,7 +38,15 @@ class User(models.Model):
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey('self', related_name='user_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey('self', related_name='user_updated_by',on_delete=models.CASCADE, null = True, blank = True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = UserManager()
 
+    def has_perm(self, perm, obj=None):
+        return self.is_staff
+
+    def has_module_perms(self, app_label):
+        return self.is_staff
     def __str__(self):
         return self.full_name
 class Club(models.Model):
