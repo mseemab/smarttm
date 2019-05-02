@@ -102,7 +102,7 @@ class EC_Member(models.Model):
     updated_by = models.ForeignKey(User, related_name='ecmember_updated_by',on_delete=models.CASCADE, null = True, blank = True)
 
     def __str__(self):
-        return self.position.name + '__' + self.club.name +'__' + self.user.name
+        return self.position.name + '__' + self.club.name +'__' + self.user.full_name
 
 class Meeting(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
