@@ -32,6 +32,10 @@ ALLOWED_HOSTS = []
 REST_FRAMEWORK = {
     # When you enable API versioning, the request.version attribute will contain a string
     # that corresponds to the version requested in the incoming client request.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
 
 }
@@ -39,6 +43,7 @@ REST_FRAMEWORK = {
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework.authtoken',
     'smarttm_web.apps.SmarttmWebConfig',
     'django.contrib.admin',
     'django.contrib.auth',
