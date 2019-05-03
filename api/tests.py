@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.views import status
-from smarttm_web.models import Participation, Meeting, Participation_Type, Club, User
+from smarttm_web.models import Participation, Meeting, Participation_Type, Club, User, Member
 from smarttm_web.serializers import ParticipationSerializer
 from django.utils import timezone
 # tests for views
@@ -11,9 +11,9 @@ class BaseViewTest(APITestCase):
     client = APIClient()
 
     @staticmethod
-    def create_participation(meeting, participation_type):
+    def create_participation(meeting, participation_type, user):
 
-        return Participation.objects.create(meeting=meeting, participation_type=participation_type)
+        return Participation.objects.create(meeting=meeting, participation_type=participation_type, user=user)
 
     @staticmethod
     def create_meeting(meeting_date, club):
@@ -28,9 +28,17 @@ class BaseViewTest(APITestCase):
         return Participation_Type.objects.create(name=name)
 
     @staticmethod
-    def create_user():
+    def create_user(email, password):
+        return User.objects.create_user(email=email, password=password)
+
+
     def setUp(self):
         # add test data
+        user1 = self.create_user('a@smarttm.com', 'asdasd32423')
+        user2 = self.create_user('ab@smarttm.com', 'asdasd32423')
+        user3 = self.create_user('abc@smarttm.com', 'asdasd32423')
+        user4 = self.create_user('abcd@smarttm.com', 'asdasd32423')
+
         club1 = self.create_club('Islamabad')
         club2 = self.create_club('Rawalpindi')
         club3 = self.create_club('Lahore')
@@ -46,10 +54,10 @@ class BaseViewTest(APITestCase):
         part_type3 = self.create_participation_type('evaluation')
         part_type4 = self.create_participation_type('timer')
 
-        self.create_participation(meeting1, part_type1)
-        self.create_participation(meeting2, part_type2)
-        self.create_participation(meeting3, part_type3)
-        self.create_participation(meeting4, part_type4)
+        self.create_participation(meeting1, part_type1, user1)
+        self.create_participation(meeting2, part_type2, user2)
+        self.create_participation(meeting3, part_type3, user3)
+        self.create_participation(meeting4, part_type4, user4)
 
 
 class GetAllParticipationsTest(BaseViewTest):

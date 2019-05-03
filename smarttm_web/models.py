@@ -80,7 +80,9 @@ class Position(models.Model):
         return self.name    
 
 class Member(models.Model):
-    user = models.ForeignKey(User, related_name='related_user', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='member_user', on_delete=models.CASCADE)
+    active = models.BooleanField(default = True)
+    status = models.BooleanField(default = True)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     club_membership_date = models.DateTimeField('Date Joined', null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
@@ -106,7 +108,7 @@ class EC_Member(models.Model):
 
 class Meeting(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    meeting_date = models.DateTimeField('Meeting Date')
+    meeting_date = models.DateField('Meeting Date')
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='meeting_created_by',on_delete=models.CASCADE, null = True, blank = True)
@@ -137,7 +139,7 @@ class Participation(models.Model):
     grammar_bad = models.CharField(max_length = 200, null = True, blank = True)
     grammar_remarks = models.CharField(max_length = 200, null = True, blank = True)
     user = models.ForeignKey(User, related_name = 'participation_responsible', on_delete=models.CASCADE)
-    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='participation_created_by',on_delete=models.CASCADE, null = True, blank = True)
