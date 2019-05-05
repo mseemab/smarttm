@@ -138,6 +138,7 @@ class Participation_Type(models.Model):
         return self.name
 
 class Participation(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, null = True, blank = True)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     participation_type = models.ForeignKey(Participation_Type, on_delete=models.CASCADE)
     evaluation = models.ForeignKey('Evaluation', related_name='related_evaluation',on_delete= models.CASCADE, null = True, blank = True)
@@ -164,6 +165,15 @@ class Evaluation(models.Model):
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='evaluation_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='evaluation_updated_by',on_delete=models.CASCADE, null = True, blank = True)
+
+class Summary(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, null = True, blank = True)
+    tt_count = models.IntegerField(default = 0)
+    speeches_count = models.IntegerField(default = 0)
+    basic_role_count = models.IntegerField(default = 0)
+    adv_role_count = models.IntegerField(default = 0)
+    evaluation_count = models.IntegerField(default = 0)
+    
 
     def __str__(self):
         return str(Participation)
