@@ -48,10 +48,18 @@ def summary(request, club_key):
         for part_type in category_basic:
             sum_obj.basic_role_count = sum_obj.basic_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
         
-        
-        
         summ.append(sum_obj)
     
     
+    return render(request, 'rankings.html' , { 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
+
+def club_management(request):
     
-    return render(request, 'rankings.html' , {'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
+    # Need to get club ID from session.
+    club_obj = Club.objects.get(pk=1)
+        
+    club_members = club_obj.member_set.filter(active=True)
+    
+    return render(request, 'manageclub.html', { 'club_members' : club_members})
+
+
