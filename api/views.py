@@ -7,6 +7,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 from rest_framework import permissions
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import PermissionDenied
+
 class ListParticipationsView(generics.ListAPIView):
     """
     Provides a get method handler.
@@ -24,7 +28,7 @@ class ParticipationTypesList(generics.ListAPIView):
 
 #get clubs of a user
 class ClubListByUser(APIView):
-
+    permission_classes = (permissions.IsAuthenticated,)
     def get_user_object(self, user_pk):
         try:
             user = User.objects.get(pk=user_pk)
@@ -43,7 +47,7 @@ class ClubListByUser(APIView):
 
 #get members of a club
 class UserListByClub(APIView):
-
+    permission_classes = (permissions.IsAuthenticated,)
     def get_club_object(self, club_pk):
         try:
             club = Club.objects.get(pk=club_pk)
@@ -63,7 +67,7 @@ class UserListByClub(APIView):
 
 #get meeting for a particular day
 class MeetingDetail(APIView):
-
+    permission_classes = (permissions.IsAuthenticated,)
     def get_club_object(self, club_pk):
         try:
             club = Club.objects.get(pk=club_pk)
@@ -90,7 +94,7 @@ class MeetingDetail(APIView):
 
 #get participation in a meeting of a member
 class ParticipationDetail(APIView):
-
+    permission_classes = (permissions.IsAuthenticated,)
     def get_meeting_object(self, meeting_pk):
         try:
             meeting = Meeting.objects.get(pk=meeting_pk)
@@ -133,6 +137,28 @@ class ParticipationDetail(APIView):
         return Response(serializer.data)
 
 class ParticipationList(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, validated_data):
+        import pdb
+        pdb.set_trace()
+        participation_list = []
+        for item in validated_data:
+            participation, created = Participation.objects.update_or_create(
+                meeting = Meeting.objects.get(pk = item.get('meeting', None)),
+                participation_type = Participation_Type.objects.get(pk = item.get('participation_type', None)),
+                user = User.objects.get(pk = item.get('user', None)),
+                defaults = {'time_seconds': item.get('time_seconds', None)}
+
+            )
+            participation.created_by = self.request.user if created else participation.created_by
+            participation.updated_by = self.request.user
+            participation.created_date = timezone.now() if created else participation.created_date
+            participation.updated_date = timezone.now()
+
+            participation_list.append(participation)
+
+        return participation_list
 
     def get_meeting_object(self, meeting_pk):
         try:
@@ -151,7 +177,73 @@ class ParticipationList(APIView):
     def post(self, request, meeting_pk, format = None):
         serializer = ParticipationSerializer(data = request.data, many =True)
         if serializer.is_valid():
-            serializer.save(created_by = self.request.user, updated_by = self.request.user, created_date = timezone.now(),
-                        updated_date = timezone.now())
+            serializer.save(created_by=self.request.user, updated_by=self.request.user, created_date=timezone.now(),
+                            updated_date = timezone.now())
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ParticipationListRoles(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, validated_data, role_type, request):
+
+        participation_list = []
+        for item in validated_data:
+            if role_type == 'timer':
+                defaults = {'time_seconds': item.get('time_seconds', None)}
+            elif role_type == 'ahcounter':
+                defaults = {'ah_count': item.get('ah_count', None)}
+            elif role_type == 'votecounter':
+                defaults = {'vote_count': item.get('vote_count', None)}
+            elif role_type == 'grammarian':
+                defaults = {'grammar_good': item.get('grammar_good', None),
+                            'grammar_bad': item.get('grammar_bad', None),
+                            'grammar_remarks': item.get('grammar_remarks', None)}
+            else:
+                raise Http404
+            meeting = Meeting.objects.get(pk=item.get('meeting', None))
+            club = meeting.club
+
+            if not Member.objects.filter(club = club, user = request.user, active = True):
+                raise PermissionDenied
+
+            participation, created = Participation.objects.update_or_create(
+                meeting = meeting,
+                participation_type = Participation_Type.objects.get(pk = item.get('participation_type', None)),
+                user = User.objects.get(pk = item.get('user', None)),
+                defaults = defaults
+
+            )
+            participation.created_by = self.request.user if created else participation.created_by
+            participation.updated_by = self.request.user
+            participation.created_date = timezone.now() if created else participation.created_date
+            participation.updated_date = timezone.now()
+
+            participation_list.append(participation)
+        Participation.objects.bulk_update(participation_list, ['created_by', 'updated_by', 'created_date', 'updated_date']+list(defaults.keys()))
+        return participation_list
+
+    def post(self, request, role_type, format = None):
+        print (request.user)
+
+        serializer = ParticipationSerializer(data = request.data, many =True)
+        if serializer.is_valid():
+            participation_list = self.create(serializer.data, role_type, request)
+            serializer = ParticipationSerializer(participation_list, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'name': user.full_name
+        })

@@ -4,7 +4,7 @@ from .models import Participation, User, Member, Club, Participation_Type, Meeti
 class ParticipationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participation
-        fields = ('pk', 'meeting', 'participation_type', 'user', 'created_by', 'updated_by')
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

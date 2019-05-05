@@ -1,15 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from api.views import ListParticipationsView, ParticipationTypesList, ClubListByUser, UserListByClub, MeetingDetail, \
-    ParticipationDetail, ParticipationList
+    ParticipationDetail, ParticipationList, CustomAuthToken, ParticipationListRoles
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-# urlpatterns = [
-#
-#     re_path('(?P<version>(v1|v2))/participations', include('smarttm_web.urls'),
-#             '(?P<version>(v1|v2))/participation_types', include('smarttm_web.urls'))
-# ]
+from rest_framework.authtoken.views import obtain_auth_token
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -30,5 +27,7 @@ urlpatterns = [
     path('getmeeting/<int:club_pk>/<int:year>/<int:month>/<int:day>/', MeetingDetail.as_view(), name="get_meeting"),
     path('getparticipation/<int:meeting_pk>/<int:user_pk>/<int:participationtype_pk>/', ParticipationDetail.as_view(), name="get_participation"),
     path('participationlist/<int:meeting_pk>/', ParticipationList.as_view(), name="participation_list"),
+    path('participationlistupdate/<str:role_type>/', ParticipationListRoles.as_view(), name="participation_list_update"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),
+    path('api-token-auth/', CustomAuthToken.as_view())
 ]

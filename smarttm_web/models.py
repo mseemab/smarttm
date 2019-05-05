@@ -155,7 +155,7 @@ class Participation(models.Model):
     updated_by = models.ForeignKey(User, related_name='participation_updated_by',on_delete=models.CASCADE, null = True, blank = True)
     
     def __str__(self):
-        return str(self.meeting.club.name) + '__' + self.user.full_name + '__' + str(self.participation_type.name)
+        return str(self.meeting.meeting_date)+str(self.meeting.club.name) + '__' + self.user.full_name + '__' + str(self.participation_type.name)
 
 class Evaluation(models.Model):
     participation = models.ForeignKey(Participation, related_name='related_participation', on_delete=models.CASCADE)
