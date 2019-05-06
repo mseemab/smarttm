@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+	<title>Participation Rankings</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+		{% include "includes.html" %}
+		<script>
+			$(document).ready( function () {
+				$('#table_id').DataTable();
+				$('#table_id1').DataTable();
+			} );
+		</script>
+		
+	</head>
+	<body>
+		<div class="container-fluid" style="padding:0;" >
+			{% include "nav.html" %}
+		</div>
+		<div class="container-fluid">
+			<h3>Participation Rankings {{ PageName }}</h3>
+		
+		</div>
+		<!-- <br /><br /> -->
+		<div class="container-fluid" >
+
+			<hr />	
+			<br><br>
+			<div class = "row">
+				<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="padding-top: 6px" >
+					<b>Date Range</b>
+				</div>
+				
+				
+					
+				
+					<form action="" method="POST">
+							{% csrf_token %}
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+								<input type="hidden" name="ToolID" id="ToolID" value="3" />
+								<input type="date" name="StartDate" id="StartDate" placeholder="From Date" class="form-control" required />
+							</div>
+							
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+								<input type="date" name="EndDate" id="EndDate" placeholder="To Date" class="form-control"  required />
+							</div>
+							
+							
+						
+					
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+								<button class="btn btn-primary" type="Submit" ><i class="fas fa-filter"></i> Filter</button>
+								<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Update Data</button>
+							</div>
+					</form>
+					<script type="text/javascript">
+						$(function () {
+							$('#datetimepicker6').datetimepicker();
+							$('#datetimepicker7').datetimepicker({
+								useCurrent: false //Important! See issue #1075
+							});
+							$("#datetimepicker6").on("dp.change", function (e) {
+								$('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+							});
+							$("#datetimepicker7").on("dp.change", function (e) {
+								$('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+							});
+						});
+					</script>
+				
+					
+					
+					<!-- Modal -->
+					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+					  <div class="modal-dialog" role="document">
+						<div class="modal-content">
+						  <div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="myModalLabel">Update Data</h4>
+						  </div>
+						  <div class="modal-body">
+							<form>
+								<div class = "row">
+									
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+									<input type='text' class = "form-control" placeholder="please upload the excel file"></input>
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+									
+									<button class = "btn btn-primary">Browse</browse>
+									</div>
+								</div>
+							</form>
+						  </div>
+						  <div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save changes</button>
+						  </div>
+						</div>
+					  </div>
+					</div>
+					<!-- Role Detail Modal -->
+					<div class="modal fade" id="RoleDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+					  <div class="modal-dialog" role="document">
+						<div class="modal-content">
+						  <div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="myModalLabel">Roles Performed</h4>
+						  </div>
+						  <div class="modal-body">
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+									<div class="table-wrapper">
+										<div class="table-title">
+											
+										</div>
+										
+										<table  class="table table-bordered" >
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Role</th>
+													
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>26-Mar-19</td>
+													<td>Timer</td>
+													
+												</tr>
+												<tr>
+													<td>2-Apr-19</td>
+													<td>Vote Counter</td>
+													
+												</tr>
+												<tr>
+													<td>9-Apr-19</td>
+													<td>AH Counter</td>
+													
+												</tr>
+												<tr>
+													<td>16-Apr-19</td>
+													<td>Grammarian</td>
+													
+												</tr>
+												</tbody>
+										</table>
+									</div>
+								</div>
+								
+								
+							</div>
+						  </div>
+						  <div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+						  </div>
+						</div>
+					  </div>
+					</div>
+				
+				
+			
+			<br>
+			<br>
+			<br>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+						
+						{% if FromDate != '' %}
+							<h4>Time Period: <span class='badge label-primary'>{{ FromDate }}</span> to <span class='badge label-primary'>{{ ToDate }}</span></h4>
+						{% else %}
+							
+						{% endif %}
+						<br>
+			
+			
+			</div>
+			<div class="row">
+				  
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+					<div class="table-wrapper">
+						<div class="table-title">
+							<table  class="table table-bordered" >
+							<thead>
+								<tr>
+									<th>Rank</th>
+									<th>Name</th>
+									<th>Table Topics Participation</th>
+									<th>Speeches Participation</th>
+									<th>Evaluations</th>
+									<th>Basic Leadership roles</th>
+									<th>Advanced Leadership roles</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for summ_Obj in summ_set %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ summ_Obj.member.user.full_name }}</td>
+										<td>{{ summ_Obj.tt_count }}</td>
+										<td>{{ summ_Obj.speeches_count }}</td>
+										<td>{{ summ_Obj.evaluation_count }}</td>
+										<td><a data-toggle="modal" data-target="#RoleDetail">{{ summ_Obj.basic_role_count }}</a></td>
+										<td><a data-toggle="modal" data-target="#RoleDetail">{{ summ_Obj.adv_role_count }}</a></td>
+										
+									</tr>
+									
+								{% endfor %}
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	<script>
+		Highcharts.chart('container', {
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: ''
+			},
+			
+			xAxis: {
+				categories: [
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19'
+				],
+				crosshair: true
+			},
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Count'
+				}
+			},
+			tooltip: {
+				headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+				pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+					'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+				footerFormat: '</table>',
+				shared: true,
+				useHTML: true
+			},
+			plotOptions: {
+				column: {
+					pointPadding: 0.2,
+					borderWidth: 0
+				},
+				series: {
+            borderWidth: 0,
+            dataLabels: {
+                enabled: true,
+                format: '{point.y}'
+            }
+        }
+			},
+			series: [{
+				name: 'AH Count',
+				data: [10, 9, 10, 9, 8, 7],
+				color: 'grey'
+			}, {
+				name: 'Votes Percentage',
+				color: '#007BFF',
+				data: [10, 15, 15, 30, 20, 20]
+
+			}]
+		});
+		</script>
+		
+		<script>
+		Highcharts.chart('container2', {
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: ''
+			},
+			xAxis: {
+				categories: [
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19',
+					'23-Apr-19'
+				],
+				crosshair: true
+			},
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Count'
+				}
+			},
+			tooltip: {
+				headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+				pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+					'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+				footerFormat: '</table>',
+				shared: true,
+				useHTML: true
+			},
+			plotOptions: {
+				column: {
+					
+					pointPadding: 0.2,
+					borderWidth: 0
+				},
+				series: {
+				
+            borderWidth: 0,
+            dataLabels: {
+                enabled: true,
+                format: '{point.y}'
+            }
+        }
+			},
+			series: [{
+				name: 'AH Count',
+				data: [10, 9, 10, 9, 8, 7],
+				color: 'grey'
+			}, {
+				name: 'Votes Percentage',
+				color: '#007BFF',
+				data: [10, 15, 15, 30, 20, 20]
+
+			}]
+		});
+		</script>
+		
+	</body>
+</html>
