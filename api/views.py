@@ -1,6 +1,7 @@
 from rest_framework import generics
 from smarttm_web.models import Participation, Participation_Type, Club, Member, User, Meeting
-from smarttm_web.serializers import ParticipationSerializer, ParticipationTypeSerializer, ClubSerializer, UserSerializer, MeetingSerializer
+from smarttm_web.serializers import ParticipationSerializer, ParticipationTypeSerializer, ClubSerializer, \
+    UserSerializer, MeetingSerializer, ParticipationSerializerForCat
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
@@ -233,6 +234,44 @@ class ParticipationListRoles(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CatBasedParticipations(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def get_member_object(self, member_pk):
+        try:
+            member = Member.objects.get(pk = member_pk)
+        except:
+            raise Http404
+        return member
+
+    def get_roles(self, cat):
+        if cat == 'basic':
+            roles = Participation_Type.objects.filter(category = 'Role-Basic')
+        elif cat == 'advanced':
+            roles = Participation_Type.objects.filter(category = 'Role-Advanced')
+        else:
+            raise Http404
+        return roles
+
+    def get_participations(self, role, member):
+
+        participations = Participation.objects.filter(participation_type = role, member = member)
+        return  participations
+
+    def get(self, request, member_pk, cat):
+
+        member = self.get_member_object(member_pk)
+        roles = self.get_roles(cat)
+        participations = []
+        for role in roles:
+            temp_participations = self.get_participations(role, member)
+            for participation in temp_participations:
+                participations.append(participation)
+
+
+
+        serializer = ParticipationSerializerForCat(participations, many=True)
+        return Response(serializer.data)
+
 class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
@@ -247,3 +286,5 @@ class CustomAuthToken(ObtainAuthToken):
             'email': user.email,
             'name': user.full_name
         })
+
+

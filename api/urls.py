@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
-from api.views import ListParticipationsView, ParticipationTypesList, ClubListByUser, UserListByClub, MeetingDetail, \
-    ParticipationDetail, ParticipationList, CustomAuthToken, ParticipationListRoles
+from api.views import ParticipationTypesList, ClubListByUser, UserListByClub, MeetingDetail, \
+    ParticipationDetail, ParticipationList, CustomAuthToken, ParticipationListRoles, CatBasedParticipations
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -20,7 +20,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    re_path('participations', ListParticipationsView.as_view(), name="participations_all"),
+    #re_path('participations', ListParticipationsView.as_view(), name="participations_all"),
     path('getparticipationtypes', ParticipationTypesList.as_view(), name="participation_types_all"),
     path('getuserclubs/<int:user_pk>/', ClubListByUser.as_view(), name="get_user_clubs"),
     path('getclubmembers/<int:club_pk>/', UserListByClub.as_view(), name="get_club_members"),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('getparticipation/<int:meeting_pk>/<int:user_pk>/<int:participationtype_pk>/', ParticipationDetail.as_view(), name="get_participation"),
     path('participationlist/<int:meeting_pk>/', ParticipationList.as_view(), name="participation_list"),
     path('participationlistupdate/<str:role_type>/', ParticipationListRoles.as_view(), name="participation_list_update"),
+    path('getcatparticipations/<int:member_pk>/<str:cat>/', CatBasedParticipations.as_view(), name = "get_cat_participations"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),
     path('api-token-auth/', CustomAuthToken.as_view())
 ]

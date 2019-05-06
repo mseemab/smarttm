@@ -6,10 +6,13 @@ class ParticipationSerializer(serializers.ModelSerializer):
         model = Participation
         fields = '__all__'
 
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('pk','full_name', 'email', 'status')
+
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +34,10 @@ class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         fields = ('pk','club', 'meeting_date')
+
+class ParticipationSerializerForCat(serializers.ModelSerializer):
+    participation_type = ParticipationTypeSerializer(read_only=True)
+    meeting = MeetingSerializer(read_only=True)
+    class Meta:
+        model = Participation
+        fields = ('participation_type', 'meeting')
