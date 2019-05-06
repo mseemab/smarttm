@@ -186,8 +186,8 @@ class ParticipationList(APIView):
 class ParticipationListRoles(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def create(self, validated_data, role_type, request):
-
+    def create(self, validated_data, meeting_pk, role_type, request):
+        club = Meeting.objects.get(pk = meeting_pk).club
         participation_list = []
         for item in validated_data:
             if role_type == 'timer':
@@ -202,14 +202,14 @@ class ParticipationListRoles(APIView):
                             'grammar_remarks': item.get('grammar_remarks', None)}
             else:
                 raise Http404
-            meeting = Meeting.objects.get(pk=item.get('meeting', None))
-            club = meeting.club
+
+
 
             if not Member.objects.filter(club = club, user = request.user, active = True):
                 raise PermissionDenied
 
             participation, created = Participation.objects.update_or_create(
-                meeting = meeting,
+                meeting_id = meeting_pk,
                 participation_type = Participation_Type.objects.get(pk = item.get('participation_type', None)),
                 user = User.objects.get(pk = item.get('user', None)),
                 defaults = defaults
@@ -224,12 +224,12 @@ class ParticipationListRoles(APIView):
         Participation.objects.bulk_update(participation_list, ['created_by', 'updated_by', 'created_date', 'updated_date']+list(defaults.keys()))
         return participation_list
 
-    def post(self, request, role_type, format = None):
+    def post(self, request, role_type, meeting_pk, format = None):
         print (request.user)
 
         serializer = ParticipationSerializer(data = request.data, many =True)
         if serializer.is_valid():
-            participation_list = self.create(serializer.data, role_type, request)
+            participation_list = self.create(serializer.data, meeting_pk, role_type, request)
             serializer = ParticipationSerializer(participation_list, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
