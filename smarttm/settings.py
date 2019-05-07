@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'smarttm_web.middleware.RequestMiddleware'
 ]
 
 ROOT_URLCONF = 'smarttm.urls'
@@ -93,9 +94,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'smarttm_db',
-        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
-        'USER': 's00470150',
-        'PASSWORD': 'Huawei123',
+        'HOST': 'localhost',
+        'USER': 'root',
+        'PASSWORD': '',
     }
 }
 
