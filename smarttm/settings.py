@@ -136,6 +136,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+LOGIN_REDIRECT_URL = '/smarttm_web/summary/1'
+
 STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (
