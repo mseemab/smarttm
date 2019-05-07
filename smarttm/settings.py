@@ -28,7 +28,7 @@ AUTH_USER_MODEL = 'smarttm_web.User'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 REST_FRAMEWORK = {
     # When you enable API versioning, the request.version attribute will contain a string
     # that corresponds to the version requested in the incoming client request.
@@ -93,9 +93,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'smarttm_db',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': '',
+        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
+        'USER': 's00470150',
+        'PASSWORD': 'Huawei123',
     }
 }
 

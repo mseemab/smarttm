@@ -27,7 +27,7 @@ urlpatterns = [
     path('getmeeting/<int:club_pk>/<int:year>/<int:month>/<int:day>/', MeetingDetail.as_view(), name="get_meeting"),
     path('getparticipation/<int:meeting_pk>/<int:user_pk>/<int:participationtype_pk>/', ParticipationDetail.as_view(), name="get_participation"),
     path('participationlist/<int:meeting_pk>/', ParticipationList.as_view(), name="participation_list"),
-    path('participationlistupdate/<str:role_type>/', ParticipationListRoles.as_view(), name="participation_list_update"),
+    path('participationlistupdate/<int:meeting_pk>/<str:role_type>/', ParticipationListRoles.as_view(), name="participation_list_update"),
     path('getcatparticipations/<int:member_pk>/<str:cat>/', CatBasedParticipations.as_view(), name = "get_cat_participations"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),
     path('api-token-auth/', CustomAuthToken.as_view())
