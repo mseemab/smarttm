@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from api.views import ParticipationTypesList, ClubListByUser, UserListByClub, MeetingDetail, \
-    ParticipationDetail, ParticipationList, CustomAuthToken, ParticipationListRoles, CatBasedParticipations
+    ParticipationDetail, CustomAuthToken, ParticipationListRoles, CatBasedParticipations
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -26,7 +26,6 @@ urlpatterns = [
     path('getclubmembers/<int:club_pk>/', UserListByClub.as_view(), name="get_club_members"),
     path('getmeeting/<int:club_pk>/<int:year>/<int:month>/<int:day>/', MeetingDetail.as_view(), name="get_meeting"),
     path('getparticipation/<int:meeting_pk>/<int:user_pk>/<int:participationtype_pk>/', ParticipationDetail.as_view(), name="get_participation"),
-    path('participationlist/<int:meeting_pk>/', ParticipationList.as_view(), name="participation_list"),
     path('participationlistupdate/<int:meeting_pk>/<str:role_type>/', ParticipationListRoles.as_view(), name="participation_list_update"),
     path('getcatparticipations/<int:member_pk>/<str:cat>/', CatBasedParticipations.as_view(), name = "get_cat_participations"),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),

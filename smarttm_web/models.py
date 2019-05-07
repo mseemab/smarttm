@@ -152,7 +152,7 @@ class Participation(models.Model):
     grammar_good = models.CharField(max_length = 200, null = True, blank = True)
     grammar_bad = models.CharField(max_length = 200, null = True, blank = True)
     grammar_remarks = models.CharField(max_length = 200, null = True, blank = True)
-    user = models.ForeignKey(User, related_name = 'participation_responsible', on_delete=models.CASCADE)
+
     member = models.ForeignKey(Member, on_delete=models.CASCADE, null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)

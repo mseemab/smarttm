@@ -15,6 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Member
         fields = ('pk','club', 'user')
