@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+	<title>Login</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+		 {% include "../includes.html" %}
+	</head>
+	<body>
+	<div class="container-fluid" style="padding:0;" >
+		{% include "../nav_login.html" %}
+	</div>
+	<br><br>
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="well" style="width:">
+				<center><h3>Login</h3></center>
+				<form method="post" action="/smarttm_web/LoginUser" >
+				<hr>
+				  {% csrf_token %}
+				  Email:<br>
+				  <input type="email" name="email" id="email" class="form-control" required >
+				  <br><br>
+				  Password:<br>
+				  <input type="password" name="password" id="password" class="form-control" required >
+				  <br>
+				  <br>
+				  <a href="#" onClick="alert('yaad rakhna tha na,')">Forgot password?</a>
+				  
+				  {% if messages %}
+						<br><br>
+						{% for message in messages %}
+						<span class="alert alert-danger"><i class="fa fa-times"></i> {{ message }}</span>
+						{% endfor %}
+					
+					{% endif %}
+				  <br>
+				  <div style="float:right;">
+					  <button type="submit" class="btn btn-primary" ><i class="fa fa-send"></i> Login</button> 
+					  <button type="reset"  class="btn btn-secondary" ><i class="fa fa-refresh"></i> Reset</button>
+				  </div>
+				  <br>
+				  
+				  <br>
+				</form>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
+	</div>
+	
+	</body>
+</html>
