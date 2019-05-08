@@ -12,12 +12,17 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import PermissionDenied
 from datetime import datetime
+import pdb
+
+
 class ListParticipationsView(generics.ListAPIView):
     """
     Provides a get method handler.
     """
     queryset = Participation.objects.all()
     serializer_class = ParticipationSerializer
+
+
 
 #OPTIMIZED
 #get participation types list
@@ -47,6 +52,8 @@ class UserListByClub(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request,  club_pk, format=None):
+
+        pdb.set_trace()
         members = Member.objects.filter(club__id = club_pk, status = 1)
         serializer = MemberSerializer(members, many = True)
         return Response(serializer.data)
