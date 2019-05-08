@@ -5,7 +5,8 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from idlelib.iomenu import blank_re
+from django.utils import timezone
+from smarttm_web.middleware import get_username
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -27,6 +28,15 @@ class UserManager(BaseUserManager):
     def get_by_natural_key(self, email_):
         return self.get(email=email_)
 
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(UserManager, self).save(*args, **kwargs)
+
 class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -39,9 +49,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     status = models.CharField(max_length = 10, null = True, blank = True)
     membership_date = models.DateTimeField('Date Joined', null = True, blank = True)
     toastmaster_id = models.IntegerField(default = 0, null = True, blank = True)
+    country = models.CharField(max_length=20, null = True, blank = True)
     paid_until = models.DateTimeField('Expiry Date', null = True, blank = True)
-    created_date = models.DateTimeField('Date Created', null = True, blank = True)
-    updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
+    created_date = models.DateTimeField('Date Created', default= timezone.now(), blank = True)
+    updated_date = models.DateTimeField('Date Updated', default= timezone.now(), blank = True)
     created_by = models.ForeignKey('self', related_name='user_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey('self', related_name='user_updated_by',on_delete=models.CASCADE, null = True, blank = True)
     USERNAME_FIELD = 'email'
@@ -53,10 +64,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         groups_str = ""
         for user_group in user_groups:
             groups_str = groups_str + ' ' + user_group.name + ','
-        return groups_str 
+        return groups_str
 
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(User, self).save(*args, **kwargs)
     def __str__(self):
         return self.full_name
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -74,7 +94,15 @@ class Club(models.Model):
     created_by = models.ForeignKey(User, related_name='club_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='club_updated_by',on_delete=models.CASCADE, null = True, blank = True)
     
-    
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Club, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -86,7 +114,16 @@ class Position(models.Model):
     status = models.CharField(max_length = 10, null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='position_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='position_updated_by',on_delete=models.CASCADE, null = True, blank = True)
-    
+
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Position, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name    
 
@@ -95,14 +132,23 @@ class Member(models.Model):
     active = models.BooleanField(default = True)
     status = models.BooleanField(default = True)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    club_membership_date = models.DateTimeField('Date Joined', null = True, blank = True)
+    club_membership_date = models.DateField('Date Joined', null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='member_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='member_updated_by',on_delete=models.CASCADE, null = True, blank = True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True, blank=True)
     is_EC = models.BooleanField(default = False)
-    
+
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Member, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.user.full_name+'__'+self.club.name
 
@@ -116,6 +162,15 @@ class EC_Member(models.Model):
     created_by = models.ForeignKey(User, related_name='ecmember_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='ecmember_updated_by',on_delete=models.CASCADE, null = True, blank = True)
 
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(EC_Member, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.position.name + '__' + self.club.name +'__' + self.user.full_name
 
@@ -127,6 +182,15 @@ class Meeting(models.Model):
     created_by = models.ForeignKey(User, related_name='meeting_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='meeting_updated_by',on_delete=models.CASCADE, null = True, blank = True)
 
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Meeting, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.meeting_date)+'__'+self.club.name
 
@@ -137,6 +201,15 @@ class Participation_Type(models.Model):
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='participationtype_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='participationtype_updated_by',on_delete=models.CASCADE, null = True, blank = True)
+
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Participation_Type, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -158,7 +231,16 @@ class Participation(models.Model):
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
     created_by = models.ForeignKey(User, related_name='participation_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='participation_updated_by',on_delete=models.CASCADE, null = True, blank = True)
-    
+
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Participation, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.meeting.meeting_date)+str(self.meeting.club.name) + '__' + self.user.full_name + '__' + str(self.participation_type.name)
 
@@ -170,6 +252,15 @@ class Evaluation(models.Model):
     created_by = models.ForeignKey(User, related_name='evaluation_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey(User, related_name='evaluation_updated_by',on_delete=models.CASCADE, null = True, blank = True)
 
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Evaluation, self).save(*args, **kwargs)
+
 class Summary(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, null = True, blank = True)
     tt_count = models.IntegerField(default = 0)
@@ -177,7 +268,15 @@ class Summary(models.Model):
     basic_role_count = models.IntegerField(default = 0)
     adv_role_count = models.IntegerField(default = 0)
     evaluation_count = models.IntegerField(default = 0)
-    
+
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Summary, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(Participation)

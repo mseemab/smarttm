@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'smarttm_web.middleware.RequestMiddleware'
 ]
 
 ROOT_URLCONF = 'smarttm.urls'
