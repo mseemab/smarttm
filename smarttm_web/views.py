@@ -10,6 +10,7 @@ from django.core.files.storage import FileSystemStorage
 import pandas as pd
 from django.utils import timezone
 from datetime import date
+from django.db.models import Avg
 import numpy as np
 from django.contrib.auth.decorators import login_required
 from smarttm_web.forms import UserForm
@@ -228,9 +229,13 @@ def my_space(request):
 
         # Roles Performed Count
 
-        Particiation_types = Participation_Type.objects.all()
+        particiation_types = Participation_Type.objects.all()
 
-        role_type = Particiation_types.filter(category__icontains = 'Role')
+        role_type = particiation_types.filter(category__icontains = 'Role')
+
+        prepared_speech_parti = particiation_types.get(name = 'Prepared Speech')
+        tt_speech_parti = particiation_types.get(name='Table Topic')
+        eval_speech_parti = particiation_types.get(name='Evaluation')
 
         memberships = list(Member.objects.filter(user = request.user))
 
@@ -238,10 +243,13 @@ def my_space(request):
 
         roles_performed_count = user_participations.filter(member__in = memberships, participation_type__in = role_type).values('participation_type').distinct().count()
 
+        ah_count_avg = user_participations.aggregate(Avg('ah_count'))
 
+        prepared_speech_count = user_participations.filter(member__in=memberships, participation_type =prepared_speech_parti).count()
+        tt_speech_count = user_participations.filter(member__in=memberships, participation_type=tt_speech_parti).count()
+        eval_speech_count = user_participations.filter(member__in=memberships, participation_type=eval_speech_parti).count()
 
-
-        return render(request, 'myspace.html', {'Roles_Performed': roles_performed_count})
+        return render(request, 'myspace.html', {'Roles_Performed': roles_performed_count, 'prepared_speech_count':prepared_speech_count, 'tt_speech_count':tt_speech_count, 'ah_count_avg': int(np.ceil(ah_count_avg['ah_count__avg'])), 'eval_speech_count':eval_speech_count } )
     else:
         response = redirect('/accounts/login/')
         return response

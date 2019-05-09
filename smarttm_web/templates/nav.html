@@ -1,33 +1,39 @@
-<nav class="navbar navbar-inverse bg-primary" style = "background-color: #007BFF; color: white;border:0;">
-			  <div class="container-fluid" > 
-				<a class="navbar-brand" href="/smarttm_web/summary" style="color: #fff"><i class="fas fa-glass-cheers" style="font-size:1.8em;"></i> </a>
-				<a class="navbar-brand" href="/smarttm_web/summary" style="color: #fff; margin-top: 1px"><b><i >SMART TM</i></b></a>
-				<ul class="nav navbar-nav" style="margin-left:40px;">
-				  <li ><a href="/smarttm_web/summary" >Rankings</a></li>
-				  <li><a  class="active"  href="#">Meetings</a></li>
-				  <li><a  class="active"  href="/smarttm_web/ManageClub">Club Management</a></li>
-				  
-				  <li><a href="/smarttm_web/MySpace">My Space</a></li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li class="dropdown shadow" style = "background-color: rgba(0,0,0,0.1); margin-top: 7px; margin-right: 26px;">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"  style="padding: 10px">{{ request.session.SelectedClub.1 }}<span class="caret"></span></a>
-								<ul class="dropdown-menu">
-									{% for item in request.session.UserClubs %}
-										<li><a href="/smarttm_web/SetClub/{{ item.0  }}/">{{ item.1  }}</a></li>
-										<li role="separator" class="divider"></li>
-									{% endfor %}
-									
-								</ul>
-					</li>
-					<li class="dropdown ">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>  {{ request.user.full_name }}   <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="#">VPE</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="/accounts/logout/">Logout</a></li>
-						</ul>
-					</li>
-				</ul>
-			  </div>
-			</nav>
+<div class="container-fluid" style="padding:0;" >
+	<nav class="navbar navbar-inverse bg-primary" style = "background-color: #007BFF; color: white;border:0;">
+				  <div class="container-fluid" >
+					<a class="navbar-brand" href="/smarttm_web/summary" style="color: #fff"><i class="fas fa-glass-cheers" style="font-size:1.8em;"></i> </a>
+					<a class="navbar-brand" href="/smarttm_web/summary" style="color: #fff; margin-top: 1px"><b><i >SMART TM</i></b></a>
+					{% if user.is_authenticated %}
+                      <ul class="nav navbar-nav" style="margin-left:40px;">
+                          <li ><a href="/smarttm_web/summary" >Rankings</a></li>
+                          <li><a  class="active"  href="/smarttm_web/ClubMeetings">Meetings</a></li>
+                          <li><a  class="active"  href="/smarttm_web/ManageClub">Club Management</a></li>
+                          <li><a href="/smarttm_web/MySpace">My Space</a></li>
+                      </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+
+                            <li class="dropdown shadow" style = "background-color: rgba(0,0,0,0.1); margin-top: 7px; margin-right: 26px;">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"  style="padding: 10px">{{ request.session.SelectedClub.1 }}<span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            {% for item in request.session.UserClubs %}
+                                                <li><a href="/smarttm_web/SetClub/{{ item.0  }}/">{{ item.1  }}</a></li>
+                                                <li role="separator" class="divider"></li>
+                                            {% endfor %}
+
+                                        </ul>
+                            </li>
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>  {{ request.user.full_name }}   <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">VPE</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="/accounts/logout/">Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                      {% endif %}
+				  </div>
+				</nav>
+
+</div>
