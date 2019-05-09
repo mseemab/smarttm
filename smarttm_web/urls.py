@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from django.urls import path, include # new
+from django.urls import path, include
 
 urlpatterns = [
    path('meeting/<int:meeting_id>/', views.meeting, name = 'meeting'),
@@ -8,6 +8,7 @@ urlpatterns = [
    path('ManageClub', views.club_management, name = 'ManageClub'),
    path('LoginUser', views.login_user, name = 'LoginUser'),
    path('register', views.register , name = 'register'),
+   path('MySpace', views.my_space , name = 'register'),
 
    path('SetClub/<int:club_id>/', views.set_club, name = 'SetClub'),
    path('ImportMembers', views.ImportMembers, name = 'summary'),

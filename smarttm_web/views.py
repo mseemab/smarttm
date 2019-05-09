@@ -220,7 +220,32 @@ def summary(request):
     else:
         response = redirect('/accounts/login/')
         return response
-        
+
+
+@login_required()
+def my_space(request):
+    if request.user.is_authenticated:
+
+        # Roles Performed Count
+
+        Particiation_types = Participation_Type.objects.all()
+
+        role_type = Particiation_types.filter(category__icontains = 'Role')
+
+        memberships = list(Member.objects.filter(user = request.user))
+
+        user_participations = Participation.objects.filter(member__in = memberships)
+
+        roles_performed_count = user_participations.filter(member__in = memberships, participation_type__in = role_type).values('participation_type').distinct().count()
+
+
+
+
+        return render(request, 'myspace.html', {'Roles_Performed': roles_performed_count})
+    else:
+        response = redirect('/accounts/login/')
+        return response
+
 @login_required()
 def club_management(request):
     if request.user.is_authenticated:

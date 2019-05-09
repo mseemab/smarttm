@@ -17,11 +17,14 @@ class ParticipationTypeAdmin(admin.ModelAdmin):
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'club', 'status', 'is_EC')
 
+class ParticipationAdmin(admin.ModelAdmin):
+    list_display = ('member', 'club', 'participation_type', 'meeting')
+
 admin.site.register(Participation_Type, ParticipationTypeAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(Club)
-admin.site.register(Participation)
+admin.site.register(Participation, ParticipationAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(EC_Member)
 admin.site.register(Meeting)
