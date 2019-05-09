@@ -11,10 +11,12 @@ import pandas as pd
 from django.utils import timezone
 from datetime import date
 import numpy as np
+from django.contrib.auth.decorators import login_required
+from smarttm_web.forms import UserForm
 # Create your views here.
 
 
-
+@login_required()
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
@@ -39,13 +41,15 @@ def login_user(request):
                 # Get user clubs
                 
                 user_clubs = user.member_user.all()
-                UserClubData = []
-                for user_club in user_clubs:
-                    UserClubData.append([user_club.club.pk, user_club.club.name])
-                
-                request.session['UserClubs'] = UserClubData
-                
-                request.session['SelectedClub'] = UserClubData[0]
+                if not len(user_clubs) == 0:
+                    UserClubData = []
+                    for user_club in user_clubs:
+                        UserClubData.append([user_club.club.pk, user_club.club.name])
+
+                    request.session['UserClubs'] = UserClubData
+
+                    request.session['SelectedClub'] = UserClubData[0]
+
                 request.session.modified = True
                 
                 return redirect('/smarttm_web/summary')
@@ -61,7 +65,24 @@ def login_user(request):
     else:
         
         return render(request, 'registration/login.html' )
-    
+
+
+def register(request):
+    registered = False
+    if request.method == 'POST':
+        user_form = UserForm(data=request.POST)
+        if user_form.is_valid():
+            user = user_form.save()
+            user.set_password(user.password)
+            user.save()
+        else:
+            print(user_form.errors)
+            registered = True
+    else:
+        user_form = UserForm()
+    return render(request, 'registration/register.html', {'user_form': user_form, 'registered': registered})
+
+
 def set_club(request, club_id):
     
     club_details = Club.objects.get(pk=club_id)
@@ -71,11 +92,11 @@ def set_club(request, club_id):
     return redirect('/smarttm_web/summary')
 
 
-            
+@login_required()
 def meeting(request, meeting_id):
     return HttpResponse("This meeting was held on %s" % str(Meeting.objects.get(pk = meeting_id).meeting_date))
 
-
+@login_required()
 def ImportMembers(request):
    
     if request.method == 'POST':
@@ -111,16 +132,6 @@ def ImportMembers(request):
 
 
             for index, row in df.iterrows():
-                # user = User()
-                # user.full_name = row['Name']
-                # user.address = row['Addr L1']
-                # user.email = row['Email']
-                # user.country = row['Country']
-                # user.home_phone = row['Home Phone']
-                # user.mobile_phone = row['Mobile Phone']
-                # user.address = row['Addr L1'] + ' ' + row['Addr L1'] + ' ', row['Addr L5']
-                # user.paid_until = row['Paid Until']
-                # user.toastmaster_id = row['Customer ID']
 
                 #check if user exists already
                 user_obj, created = User.objects.update_or_create(
@@ -165,7 +176,7 @@ def ImportMembers(request):
         
     return redirect('ManageClub')
 
-
+@login_required()
 def summary(request):
     
     if request.user.is_authenticated:
@@ -205,12 +216,12 @@ def summary(request):
             summ.append(sum_obj)
         
         
-        return render(request, 'rankings.html' , { 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
+        return render(request, 'rankings.html' , { 'page_title':'User Rankings for '+ club_obj.name , 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
     else:
         response = redirect('/accounts/login/')
         return response
         
-        
+@login_required()
 def club_management(request):
     if request.user.is_authenticated:
         # Need to get club ID from session.

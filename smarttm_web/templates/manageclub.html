@@ -1,26 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "basefile.html" %}
 
-  <head>
-	<title>Club Management</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-		{% include "includes.html" %}
-		<script>
-			$(document).ready( function () {
-				$('#table_id').DataTable();
-				$('#table_id1').DataTable();
-			} );
-		</script>
-		
-	</head>
-	<body>
-		<div class="container-fluid" style="padding:0;" >
-			{% include "nav.html" %}
-		</div>
+
+{% block title %}Manage Club - SMARTTM {%endblock%}
+{% block body_block%}
 		<div class="container-fluid">
 			<h3>Club Management</h3>
 		
@@ -123,6 +105,4 @@
 			</div>
 		</div>
 	 
-		
-	</body>
-</html>
+{%endblock%}

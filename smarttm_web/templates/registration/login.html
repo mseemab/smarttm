@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-
-  <head>
-	<title>Login</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-		 {% include "../includes.html" %}
-	</head>
-	<body>
-	<div class="container-fluid" style="padding:0;" >
-		{% include "../nav_login.html" %}
-	</div>
+{% extends "basefile.html" %}
+{% block title %}Login - SMARTTM{%endblock%}
+{% block body_block%}
 	<br><br>
 	<div class="row">
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
@@ -53,5 +40,4 @@
 		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
 	</div>
 	
-	</body>
-</html>
+{% endblock %}

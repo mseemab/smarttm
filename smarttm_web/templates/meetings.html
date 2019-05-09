@@ -1,10 +1,10 @@
 {% extends "basefile.html" %}
 
 
-{% block title %}Member rankings - SMARTTM {%endblock%}
+{% block title %}Meeting Records - SMARTTM {%endblock%}
 {% block body_block%}
 		<div class="container-fluid">
-			<h3>Participation Rankings</h3>
+			<h3>Meeting Records</h3>
 		
 		</div>
 		<!-- <br /><br /> -->
@@ -12,40 +12,11 @@
 
 			<hr />	
 			<br><br>
-			<div class = "row">
-				<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="padding-top: 6px" >
-					<b>Date Range</b>
-				</div>
-				
-					<form action="" method="POST">
-							{% csrf_token %}
-							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
-								<input type="hidden" name="ToolID" id="ToolID" value="3" />
-								<input type="date" name="StartDate" id="StartDate" placeholder="From Date" class="form-control" required />
-							</div>
-							
-							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-								<input type="date" name="EndDate" id="EndDate" placeholder="To Date" class="form-control"  required />
-							</div>
-							
-							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-								<button class="btn btn-primary" type="Submit" ><i class="fas fa-filter"></i> Filter</button>
-								<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Update Data</button>
-							</div>
-					</form>
-					 
+
 			<br>
 			<br>
 			<br>
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
-						
-						{% if FromDate != '' %}
-							<h4>Time Period: <span class='badge label-primary'>{{ FromDate }}</span> to <span class='badge label-primary'>{{ ToDate }}</span></h4>
-						{% else %}
-							
-						{% endif %}
-						<br>
-			</div>
+
 			<div class="row">
 				  
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
@@ -54,25 +25,22 @@
 							<table  class="table table-bordered" >
 							<thead>
 								<tr>
-									<th>Rank</th>
-									<th>Name</th>
-									<th>Table Topics Participation</th>
-									<th>Speeches Participation</th>
-									<th>Evaluations</th>
-									<th>Basic Leadership roles</th>
-									<th>Advanced Leadership roles</th>
+									<td>{{ # }}</td>
+									<th>Meeting Date</th>
+									<th>Total Speeches</th>
+									<th>Total Table Topics</th>
+									<th>Total Prepared Speeched</th>
+
 								</tr>
 							</thead>
 							<tbody>
 								{% for summ_Obj in summ_set %}
 									<tr>
 										<td>{{ forloop.counter }}</td>
-										<td>{{ summ_Obj.member.user.full_name }}</td>
+										<td><a>{{ summ_Obj.date }}</a></td>
+										<td>{{ summ_Obj.speech_count +  }}</td>
 										<td>{{ summ_Obj.tt_count }}</td>
-										<td>{{ summ_Obj.speeches_count }}</td>
-										<td>{{ summ_Obj.evaluation_count }}</td>
-										<td><a href="#" onClick="GetHistory({{ summ_Obj.member.pk }}, 'basic');">{{ summ_Obj.basic_role_count }}</a></td>
-										<td><a href="#" onClick="GetHistory({{ summ_Obj.member.pk }}, 'advanced');">{{ summ_Obj.adv_role_count }}</a></td>
+										<td>{{ summ_Obj.prep_speech_count }}</td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -154,5 +122,5 @@
 			  $('#divpost').html(eTable);
 			}
 		</script>
-        </div>
+
 {%endblock%}

@@ -51,8 +51,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     toastmaster_id = models.IntegerField(default = 0, null = True, blank = True)
     country = models.CharField(max_length=20, null = True, blank = True)
     paid_until = models.DateTimeField('Expiry Date', null = True, blank = True)
-    created_date = models.DateTimeField('Date Created', default= timezone.now(), blank = True)
-    updated_date = models.DateTimeField('Date Updated', default= timezone.now(), blank = True)
+    created_date = models.DateTimeField('Date Created', default= timezone.now, blank = True)
+    updated_date = models.DateTimeField('Date Updated', default= timezone.now, blank = True)
     created_by = models.ForeignKey('self', related_name='user_created_by',on_delete=models.CASCADE, null = True, blank = True)
     updated_by = models.ForeignKey('self', related_name='user_updated_by',on_delete=models.CASCADE, null = True, blank = True)
     USERNAME_FIELD = 'email'
@@ -67,9 +67,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return groups_str
 
     def save(self, *args, **kwargs):
-
-        self.created_by = get_username() if self.created_by is None else self.created_by
-        self.updated_by = get_username()
+        req_user = get_username()
+        if not req_user.is_anonymous:
+            self.created_by = req_user if self.created_by is None else self.created_by
+            self.updated_by = req_user
         self.created_date = timezone.now() if self.created_date is None else self.created_date
         self.updated_date = timezone.now()
 
@@ -281,3 +282,8 @@ class Summary(models.Model):
     def __str__(self):
         return str(Participation)
 
+class Meeting_Summary(models.Model):
+    meeting_date = models.DateField('Meeting Date', null = True, blank = True)
+    speech_count = models.IntegerField(default=0)
+    tt_count = models.IntegerField(default=0)
+    prep_speech_count = models.IntegerField(default=0)

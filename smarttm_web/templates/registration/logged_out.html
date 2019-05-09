@@ -1,23 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "basefile.html" %}
 
-  <head>
-	<title>Logged out</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-		 {% include "../includes.html" %}
-	</head>
-	<body>
-	<div class="container-fluid" style="padding:0;" >
-		{% include "../nav_login.html" %}
-	</div>
+
+{% block title %}Member rankings - SMARTTM {%endblock%}
+{% block body_block%}
 	<div class="well" style="width:">
 		<h2>You are logged out. <a href="/accounts/login">Login</a></h2>
 		
 		
 	</div>
-	</body>
-</html>
+{%endblock%}
