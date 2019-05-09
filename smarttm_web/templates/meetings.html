@@ -13,9 +13,7 @@
 			<hr />	
 			<br><br>
 
-			<br>
-			<br>
-			<br>
+
 
 			<div class="row">
 				  
@@ -25,7 +23,7 @@
 							<table  class="table table-bordered" >
 							<thead>
 								<tr>
-									<td>{{ # }}</td>
+									<td> # </td>
 									<th>Meeting Date</th>
 									<th>Total Speeches</th>
 									<th>Total Table Topics</th>
@@ -37,8 +35,8 @@
 								{% for summ_Obj in summ_set %}
 									<tr>
 										<td>{{ forloop.counter }}</td>
-										<td><a>{{ summ_Obj.date }}</a></td>
-										<td>{{ summ_Obj.speech_count +  }}</td>
+										<td><a href = "{% url 'meeting_detail' summ_Obj.meeting.pk %}">{{ summ_Obj.meeting.meeting_date }}</a></td>
+										<td>{{ summ_Obj.speech_count }}</td>
 										<td>{{ summ_Obj.tt_count }}</td>
 										<td>{{ summ_Obj.prep_speech_count }}</td>
 									</tr>

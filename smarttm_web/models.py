@@ -243,7 +243,7 @@ class Participation(models.Model):
         super(Participation, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.meeting.meeting_date)+str(self.meeting.club.name) + '__' + self.user.full_name + '__' + str(self.participation_type.name)
+        return str(self.meeting.meeting_date)+str(self.meeting.club.name) + '__' + '__' + str(self.participation_type.name)
 
 class Evaluation(models.Model):
     participation = models.ForeignKey(Participation, related_name='related_participation', on_delete=models.CASCADE)
@@ -283,7 +283,7 @@ class Summary(models.Model):
         return str(Participation)
 
 class Meeting_Summary(models.Model):
-    meeting_date = models.DateField('Meeting Date', null = True, blank = True)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     speech_count = models.IntegerField(default=0)
     tt_count = models.IntegerField(default=0)
     prep_speech_count = models.IntegerField(default=0)

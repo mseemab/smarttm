@@ -92,9 +92,6 @@ def set_club(request, club_id):
     return redirect('/smarttm_web/summary')
 
 
-@login_required()
-def meeting(request, meeting_id):
-    return HttpResponse("This meeting was held on %s" % str(Meeting.objects.get(pk = meeting_id).meeting_date))
 
 @login_required()
 def ImportMembers(request):

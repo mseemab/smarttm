@@ -1,0 +1,152 @@
+{% extends "basefile.html" %}
+
+
+{% block title %}Meeting Details of {{ meeting.meeting_date }} - SMARTTM {%endblock%}
+{% block body_block%}
+		<div class="container-fluid">
+			<h3>Meeting Details of {{ meeting.meeting_date }} </h3>
+		
+		</div>
+		<!-- <br /><br /> -->
+		<div class="container-fluid" >
+
+			<hr />	
+			<br><br>
+
+
+
+			<div class="row">
+				<h4>Speeches Detail </h4>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+					<div class="table-wrapper">
+						<div class="table-title">
+							<table  class="table table-bordered" >
+							<thead>
+								<tr>
+									<td> # </td>
+									<th>Member Name</th>
+									<th>Speech Type</th>
+									<th>Total Duration</th>
+									<th>AH Counts</th>
+									<th>Vote Counts</th>
+
+								</tr>
+							</thead>
+							<tbody>
+								{% for part_Obj in speech_part %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ part_Obj.member.user.full_name }}</td>
+										<td>{{ part_Obj.participation_type.name }}</td>
+										<td>{{ part_Obj.time_seconds }}</td>
+										<td>{{ summ_Obj.ah_count }}</td>
+										<td>{{ summ_Obj.vote_count }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+            <div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
+				<center><h4>Basic Roles</h4></center>
+				<br>
+					<div class="table-wrapper">
+						<div class="table-title">
+
+						</div>
+
+						<table  class="table table-bordered" >
+							<thead>
+								<tr>
+									<td> # </td>
+									<th>Role Name</th>
+									<th>Performed By</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for part_Obj in role_basic_part %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ part_Obj.participation_type.name }}</td>
+                                        <td>{{ part_Obj.member.user.full_name }}</td>
+										</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
+				<center><h4>Advanced Roles</h4></center>
+				<br>
+					<div class="table-wrapper">
+						<div class="table-title">
+
+						</div>
+
+						<table  class="table table-bordered" >
+							<thead>
+								<tr>
+									<td> # </td>
+									<th>Role Name</th>
+									<th>Performed By</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for part_Obj in role_advanced_part %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ part_Obj.participation_type.name }}</td>
+                                        <td>{{ part_Obj.member.user.full_name }}</td>
+										</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		
+		<!-- Modal -->
+		
+		<script>
+			
+			function GetHistory(MemberID, ParticipationType){
+				console.log(MemberID)
+				 
+				 
+				$.get( "/api/getcatparticipations/"+MemberID+"/"+ParticipationType+"/",
+				function( data ) {
+				 
+				  console.log(data)
+				  createTableByForLoop(data)
+				  $("#RoleDetail").modal();
+//					$('#overlay').hide() 
+				});
+			}
+		
+			function createTableByForLoop(data)
+			{
+			  var eTable="<table class='table table-striped small'><thead><tr><th>Name</th><th>Category</th><th>Dated</th</tr></thead><tbody>"
+			  
+			  for(var i=0; i<data.length;i++)
+			  {
+				
+				eTable += "<tr>";
+				eTable += "<td>"+data[i]['participation_type']['name']+"</td>";
+				eTable += "<td>"+data[i]['participation_type']['category']+"</td>";
+				eTable += "<td>"+data[i]['meeting']['meeting_date']+"</td>";
+			 
+				eTable += "</tr>";
+			  }
+			  eTable +="</tbody></table>";
+			  $('#divpost').html(eTable);
+			}
+		</script>
+
+{%endblock%}
