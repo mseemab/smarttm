@@ -9,6 +9,7 @@ urlpatterns = [
    path('LoginUser/', views.login_user, name = 'LoginUser'),
    path('register/', views.register , name = 'register'),
    path('ClubMeetings/', meeting_views.meetings_view, name = 'meeting_summary'),
+   path('MySpace', views.my_space , name = 'register'),
    path('SetClub/<int:club_id>/', views.set_club, name = 'SetClub'),
    path('ImportMembers/', views.ImportMembers, name = 'import_members'),
 ]
