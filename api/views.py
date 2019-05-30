@@ -53,7 +53,6 @@ class UserListByClub(APIView):
 
     def get(self, request,  club_pk, format=None):
 
-        pdb.set_trace()
         members = Member.objects.filter(club__id = club_pk, status = 1)
         serializer = MemberSerializer(members, many = True)
         return Response(serializer.data)

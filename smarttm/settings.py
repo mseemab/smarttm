@@ -90,13 +90,23 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'smarttm_db',
+#         'HOST': 'localhost',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'smarttm_db',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': '',
+        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
+        'USER': 's00470150',
+        'PASSWORD': 'Huawei123',
     }
 }
 
