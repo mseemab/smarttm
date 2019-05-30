@@ -132,7 +132,7 @@ class Member(models.Model):
     user = models.ForeignKey(User, related_name='member_user', on_delete=models.CASCADE)
     active = models.BooleanField(default = True)
     status = models.BooleanField(default = True)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='members')
     club_membership_date = models.DateField('Date Joined', null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)

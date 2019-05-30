@@ -94,9 +94,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'smarttm_db',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': '',
+        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
+        'USER': 's00470150',
+        'PASSWORD': 'Huawei123',
     }
 }
 

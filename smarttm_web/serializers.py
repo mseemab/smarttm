@@ -15,16 +15,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = serializers.StringRelatedField()
 
     class Meta:
         model = Member
         fields = ('pk','club', 'user')
 
 class ClubSerializer(serializers.ModelSerializer):
+    members = MemberSerializer(read_only=True, many=True, )
+    #members = serializers.StringRelatedField(many=True)
     class Meta:
         model = Club
-        fields = ('pk','name', 'club_number', 'address')
+        fields = ('pk','name', 'club_number', 'address', 'members')
 
 class ParticipationTypeSerializer(serializers.ModelSerializer):
     class Meta:

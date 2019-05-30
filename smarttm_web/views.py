@@ -181,7 +181,7 @@ def summary(request):
         club_key = request.session['SelectedClub'][0]
         club_obj = Club.objects.get(pk=club_key)
             
-        club_members = club_obj.member_set.filter(active=True)
+        club_members = club_obj.members.filter(active=True)
         
         FromDate = ""
         ToDate = ""
@@ -258,7 +258,7 @@ def club_management(request):
         club_key = request.session['SelectedClub'][0]
         club_obj = Club.objects.get(pk=club_key)
             
-        club_members = club_obj.member_set.filter(active=True)
+        club_members = club_obj.members.filter(active=True)
         
         return render(request, 'manageclub.html', { 'club_members' : club_members})
 
