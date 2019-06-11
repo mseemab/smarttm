@@ -212,8 +212,7 @@ def summary(request):
                 sum_obj.basic_role_count = sum_obj.basic_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
             
             summ.append(sum_obj)
-        
-        
+
         return render(request, 'rankings.html' , { 'page_title':'User Rankings for '+ club_obj.name , 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
     else:
         response = redirect('/accounts/login/')

@@ -127,6 +127,7 @@ class ParticipationListRoles(APIView):
             else:
                 raise Http404
             participation, created = Participation.objects.update_or_create(
+                club_id = meeting.club_id,
                 meeting_id = meeting_pk,
                 participation_type_id = item.get('participation_type', None),
                 member_id = item.get('member', None),
