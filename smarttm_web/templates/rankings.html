@@ -3,23 +3,18 @@
 
 {% block title %}Member rankings - SMARTTM {%endblock%}
 {% block body_block%}
-		<div class="container-fluid">
-			<br><br>
-			<h3>Participation Rankings</h3>
-		
-		</div>
-		<!-- <br /><br /> -->
+
 		<div class="container-fluid" >
 
-			<hr />	
-			<br><br>
+			<br>
+			<br>
 			<div class = "row">
 				<div class="col-sm" style="padding-top: 6px" >
-
+					<h3>Participation Rankings</h3>
 				</div>
-				<div class="col-sm">
+				<div class="col-sm" >
 
-					<form action="" method="POST" class="form-inline">
+					<form action="" method="POST" class="form-inline" style="float:right;">
 							{% csrf_token %}
 								<b>Date Range&nbsp;&nbsp;</b>
 								<input type="hidden" name="ToolID" id="ToolID" value="3" />
@@ -32,20 +27,23 @@
 
 
 					</form>
-					</div>
+				</div>
+
 			<br>
 			<br>
-			<br>
+
 			</div>
+			<hr />
+			<br>
 			<div class="row">
 			<div class="col-sm" >
 						
 						{% if FromDate != '' %}
-							<h4>Time Period: <span class='badge label-primary'>{{ FromDate }}</span> to <span class='badge label-primary'>{{ ToDate }}</span></h4>
+							<h4>Time Period: <span class='badge badge-primary'>{{ FromDate }}</span> to <span class='badge badge-primary'>{{ ToDate }}</span></h4>
 						{% else %}
 							
 						{% endif %}
-						<br>
+
 			</div>
 			</div>
 			<div class="row">
@@ -53,14 +51,14 @@
 				<div class="col-sm" >
 					<div class="table-wrapper">
 						<div class="table-title">
-							<table  class="table table-bordered" >
+							<table  id="example"  class="table table-bordered " >
 							<thead>
 								<tr>
 									<th>#</th>
 									<th>Name</th>
-									<th>Present (%)</th>
-<!--									<th>Last Two Meetings</th>-->
-									<th>TT Participation (%) </th>
+									<th>Present</th>
+									<th>Latest Absents</th>
+									<th>TT Participation</th>
 									<th>TT Participation</th>
 									<th>Speeches Participation</th>
 									<th>Evaluations</th>
@@ -74,10 +72,7 @@
 										<td>{{ forloop.counter }}</td>
 										<td>{{ summ_Obj.member.user.full_name }}</td>
 										<td>{{ summ_Obj.attendance_percent }} %</td>
-<!--										<td>-->
-<!--											{% if sum_Obj.last_two_meetings_att %}Present{% endif %}-->
-<!--											{% if sum_Obj.last_two_meetings_att == False %}Absent{% endif %}-->
-<!--										</td>-->
+										<td>{{ summ_Obj.last_absents }}</td>
 										<td>{{ summ_Obj.tt_percent }} %</td>
 										<td>{{ summ_Obj.tt_count }}</td>
 										<td>{{ summ_Obj.speeches_count }}</td>
@@ -168,5 +163,54 @@
 			  $('#divpost').html(eTable);
 			}
 		</script>
+
+
         </div>
+
+
+	<script type="text/javascript">
+
+		$(document).ready(function() {
+			$('#example').dataTable({
+				"bPaginate": false,
+
+			});
+		} );
+	</script>
+
+
+	<style>
+
+
+		table.dataTable {
+			border-radius:5px;
+			font-size:0.8em;
+			margin: 0 auto;
+			clear: both;
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
+	[type=search] {
+
+			text-align:right;
+			font-size: 1rem;
+			line-height: 1.5;
+			color: #495057;
+			background-color: #fff;
+			background-clip: padding-box;
+			border: 1px solid #ced4da;
+			border-radius: .25rem;
+			transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	}
+
+.table-title {
+	text-align:right;
+}
+
+	.dataTables_wrapper .dataTables_info {
+		color:grey;
+		font-size:0.75em;
+	}
+	</style>
 {%endblock%}

@@ -217,6 +217,16 @@ class Attendance(models.Model):
 
         super(Attendance, self).save(*args, **kwargs)
 
+    @staticmethod
+    def get_latest_absents(members_list):
+        data = Attendance.objects.raw('SELECT att.id, att.member_id, (SELECT ifnull(count(*), 0) \
+FROM smarttm_web_attendance as abc \
+WHERE abc.member_id = att.member_id and abc.present = 0 and abc.id > ifnull((SELECT mini_attendance.id FROM smarttm_web_attendance as mini_attendance WHERE mini_attendance.member_id = att.member_id and mini_attendance.present = 1 order by mini_attendance.id desc LIMIT 1),1) ) as count_absents \
+FROM smarttm_web_attendance as att \
+WHERE att.member_id in %s\
+group by att.member_id \
+order by att.id DESC ' % str(tuple(members_list)))
+        return data
     def __str__(self):
         return self.meeting.club.name + '__' +str(self.meeting.meeting_date) + '__' + self.member.user.full_name
 
@@ -296,7 +306,7 @@ class Summary(models.Model):
     adv_role_count = models.IntegerField(default = 0)
     evaluation_count = models.IntegerField(default = 0)
     attendance_percent = models.IntegerField(default = 0)
-    last_two_meetings_att = models.BooleanField(default=True)
+    last_absents = models.IntegerField(default = 0)
     tt_percent = models.IntegerField(default = 0)
 
     def save(self, *args, **kwargs):

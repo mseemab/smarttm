@@ -200,7 +200,13 @@ def summary(request):
         category_adv = partication_types.filter(category = 'Role-Advanced')
         category_basic = partication_types.filter(category = 'Role-Basic')
         summ = []
-        
+
+        club_member_ids = [member.pk for member in club_members]
+        latest_absents = Attendance.get_latest_absents(club_member_ids)
+        latest_absents_dict = {}
+        for absent in latest_absents:
+            latest_absents_dict[absent.member_id] = absent.count_absents
+
         for club_mem in club_members:
             sum_obj = Summary()
             sum_obj.member = club_mem
@@ -212,7 +218,7 @@ def summary(request):
             absents = Attendance.objects.filter(member=club_mem, present=False).count()
             sum_obj.attendance_percent = math.ceil((presents/(presents+absents))*100) if presents+absents != 0 else 0
             sum_obj.tt_percent = math.ceil((tt_count/presents)*100) if presents != 0 else 0
-
+            sum_obj.last_absents = latest_absents_dict[club_mem.id]
             # mem_att = Attendance.objects.filter(member = club_mem).order_by('-meeting')[:2]
             # if mem_att.filter(present = False).count() == mem_att.all().count():
             #     sum_obj.last_two_meetings_att = False
