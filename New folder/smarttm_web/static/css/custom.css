@@ -1,0 +1,244 @@
+
+.container-fluid{
+	padding-left:60px;
+	padding-right:60px;
+}
+
+
+body {
+	color: #566787;
+	font-family: 'Varela Round', sans-serif;
+}
+						
+
+.card{
+	background-color:#fff;
+	border-radius:6px;
+	border: 1px #efefef solid;
+	border-bottom:5px #007BFF solid;
+	padding:25px;
+	text-align: center;
+	font-size: 0.8em;
+	
+}
+
+.card .icon{
+	font-size:3.9em;
+	color: #2490c1;
+	text-align:center;
+	padding-top:15px;
+}
+
+.card h2{
+	color: #007BFF;
+	font-size:1.5em;
+	margin:0;
+	font-weight:bold;
+	
+}
+
+.card span{
+	color: #4b5366;
+	font-size: 4em;
+	margin-bottom: 20px;
+	
+}
+
+.count{
+	font-size:2.5em;
+}
+
+.inset {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	box-shadow:
+		inset 0 0 0 2px rgba(255,255,255,0.6), 
+		0 1px 1px rgba(0,0,0,0.1);
+	background-color: transparent !important;
+	z-index: 999;
+}
+
+.inset img {
+	border-radius: inherit;
+	width: inherit;
+	height: inherit;
+	display: block;
+	position: relative;
+	z-index: 998;
+}		
+
+.card:hover{
+	transition: box-shadow 1s;
+	box-shadow: 0px 0px 0px grey;
+}
+
+.table-wrapper {
+	background: #fff;
+	
+	margin: 10px auto;
+	border-radius: 3px;
+	box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+.table-title {
+	
+	
+	margin: -20px -25px 10px;
+	border-radius: 3px 3px 0 0;
+	text-align: center;
+	
+}
+.table-wrapper{
+	margin-top: 20px;
+	
+}
+.table{
+	font-size: 0.9em;
+	text-align: center;
+}
+th{
+text-align: center;
+}
+
+.navbar-brand {
+	color:#fff !important;
+	margin-top: -7px;
+	font-weight: bold;
+	
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.83);
+}
+/* .navbar-nav .nav-item .nav-link { */
+	/* color:#fff !important; */
+	/* margin-right:10px; */
+/* } */
+/* .navbar-nav>li>a{ */
+	/* color: white */
+/* } */
+/* .navbar{ */
+/* border-radius:0; */
+/* } */
+
+
+.count-number{
+color: #007BFF;
+}
+
+.counter {
+
+padding: 20px 0;
+border-radius: 5px;
+background: #FFF;
+color:grey;
+border:1px solid grey;
+
+}
+
+
+
+.counter .fa {
+color:grey;
+}
+
+.counter .fas {
+color:grey;
+}
+
+.count-title {
+font-size: 40px;
+font-weight: normal;
+margin-top: 10px;
+margin-bottom: 0;
+text-align: center;
+}
+
+.count-text {
+font-size: 13px;
+font-weight: normal;
+margin-top: 10px;
+margin-bottom: 0;
+text-align: center;
+letter-spacing:2px;
+text-transform: uppercase;
+}
+
+.fa-2x {
+margin: 0 auto;
+float: none;
+display: table;
+color: grey;
+}
+
+.navbar-header{
+  margin-left:5px;
+  width:100%;
+}
+		
+.navbar-inverse .navbar-nav>li>a  {
+	color:#fff;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover  {
+	color:#fff;
+	background-color:rgba(0,0,0,0.1);
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
+	color: #fff;
+	background-color: rgba(0,0,0,0.1);
+}
+
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {
+	color: #fff;
+	background-color: rgba(0,0,0,0.1);
+}
+	.shadow {
+	   -moz-box-shadow:    inset 0 0 3px #2e2e2e;
+	   -webkit-box-shadow: inset 0 0 3px #2e2e2e;
+	   box-shadow:         inset 0 0 3px #2e2e2e;
+	}
+.badge{
+	background: #337AB7;
+	font-size: 15px;
+	padding: 6px;
+}
+
+/* @media (max-width: 1170px) { */
+    /* .navbar-header { */
+        /* float: none; */
+    /* } */
+    /* .navbar-left,.navbar-right { */
+        /* float: none !important; */
+    /* } */
+    /* .navbar-toggle { */
+        /* display: block; */
+    /* } */
+    /* .navbar-collapse { */
+        /* border-top: 1px solid transparent; */
+        /* box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); */
+    /* } */
+    /* .navbar-fixed-top { */
+        /* top: 0; */
+        /* border-width: 0 0 1px; */
+    /* } */
+    /* .navbar-collapse.collapse { */
+        /* display: none!important; */
+    /* } */
+    /* .navbar-nav { */
+        /* float: none!important; */
+        /* margin-top: 7.5px; */
+        /* display: none; */
+    /* } */
+    /* .navbar-nav>li { */
+        /* float: none; */
+    /* } */
+    /* .navbar-nav>li>a { */
+        /* padding-top: 10px; */
+        /* padding-bottom: 10px; */
+    /* } */
+    /* .collapse.in{ */
+        /* display:block !important; */
+    /* } */
+/* } */

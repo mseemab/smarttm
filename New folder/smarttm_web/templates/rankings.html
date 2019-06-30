@@ -1,0 +1,216 @@
+{% extends "basefile.html" %}
+
+
+{% block title %}Member rankings - SMARTTM {%endblock%}
+{% block body_block%}
+
+		<div class="container-fluid" >
+
+			<br>
+			<br>
+			<div class = "row">
+				<div class="col-sm" style="padding-top: 6px" >
+					<h3>Participation Rankings</h3>
+				</div>
+				<div class="col-sm" >
+
+					<form action="" method="POST" class="form-inline" style="float:right;">
+							{% csrf_token %}
+								<b>Date Range&nbsp;&nbsp;</b>
+								<input type="hidden" name="ToolID" id="ToolID" value="3" />
+								<input type="date" name="StartDate" id="StartDate" placeholder="From Date" class="form-control" required /><span>&nbsp;&nbsp;to&nbsp;&nbsp;</span>
+								<input type="date" name="EndDate" id="EndDate" placeholder="To Date" class="form-control"  required />
+
+							
+								&nbsp;&nbsp;
+								<button class="btn btn-primary" type="Submit" ><i class="fas fa-filter"></i> Filter</button>
+
+
+					</form>
+				</div>
+
+			<br>
+			<br>
+
+			</div>
+			<hr />
+			<br>
+			<div class="row">
+			<div class="col-sm" >
+						
+						{% if FromDate != '' %}
+							<h4>Time Period: <span class='badge badge-primary'>{{ FromDate }}</span> to <span class='badge badge-primary'>{{ ToDate }}</span></h4>
+						{% else %}
+							
+						{% endif %}
+
+			</div>
+			</div>
+			<div class="row">
+				  
+				<div class="col-sm" >
+					<div class="table-wrapper">
+						<div class="table-title">
+							<table  id="example"  class="table table-bordered " >
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Name</th>
+									<th>Present</th>
+									<th>Latest Absents</th>
+									<th>TT Participation</th>
+									<th>TT Participation</th>
+									<th>Speeches Participation</th>
+									<th>Evaluations</th>
+									<th>Basic Leadership roles</th>
+									<th>Advanced Leadership roles</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for summ_Obj in summ_set %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ summ_Obj.member.user.full_name }}</td>
+										<td>{{ summ_Obj.attendance_percent }} %</td>
+										<td>{{ summ_Obj.last_absents }}</td>
+										<td>{{ summ_Obj.tt_percent }} %</td>
+										<td>{{ summ_Obj.tt_count }}</td>
+										<td>{{ summ_Obj.speeches_count }}</td>
+										<td>{{ summ_Obj.evaluation_count }}</td>
+										<td><a href="#" onClick="GetHistory({{ summ_Obj.member.pk }}, 'basic');">{{ summ_Obj.basic_role_count }}</a></td>
+										<td><a href="#" onClick="GetHistory({{ summ_Obj.member.pk }}, 'advanced');">{{ summ_Obj.adv_role_count }}</a></td>
+									</tr>
+								{% endfor %}
+							</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		
+		
+		
+		<!-- Modal -->
+
+		<div class="modal fade" id="RoleDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Roles Performed</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+			  <div class="modal-body">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+						<div class="table-wrapper">
+							<div class="table-title">
+								
+							</div>
+							
+							<div id="divpost"></div>
+						</div>
+					</div>
+					
+					
+				</div>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
+		<!-- Modal -->
+		
+		<script>
+			
+			function GetHistory(MemberID, ParticipationType){
+				console.log(MemberID)
+				 
+				 
+				$.get( "/api/getcatparticipations/"+MemberID+"/"+ParticipationType+"/",
+				function( data ) {
+				 
+				  console.log(data)
+				  createTableByForLoop(data)
+				  $("#RoleDetail").modal();
+//					$('#overlay').hide() 
+				});
+			}
+		
+			function createTableByForLoop(data)
+			{
+			  var eTable="<table class='table table-striped small'><thead><tr><th>Name</th><th>Category</th><th>Dated</th</tr></thead><tbody>"
+			  
+			  for(var i=0; i<data.length;i++)
+			  {
+				
+				eTable += "<tr>";
+				eTable += "<td>"+data[i]['participation_type']['name']+"</td>";
+				eTable += "<td>"+data[i]['participation_type']['category']+"</td>";
+				eTable += "<td>"+data[i]['meeting']['meeting_date']+"</td>";
+			 
+				eTable += "</tr>";
+			  }
+			  eTable +="</tbody></table>";
+			  $('#divpost').html(eTable);
+			}
+		</script>
+
+
+        </div>
+
+
+	<script type="text/javascript">
+
+		$(document).ready(function() {
+			$('#example').dataTable({
+				"bPaginate": false,
+
+			});
+		} );
+	</script>
+
+
+	<style>
+
+
+		table.dataTable {
+			border-radius:5px;
+			font-size:0.8em;
+			margin: 0 auto;
+			clear: both;
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
+	[type=search] {
+
+			text-align:right;
+			font-size: 1rem;
+			line-height: 1.5;
+			color: #495057;
+			background-color: #fff;
+			background-clip: padding-box;
+			border: 1px solid #ced4da;
+			border-radius: .25rem;
+			transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	}
+
+.table-title {
+	text-align:right;
+}
+
+	.dataTables_wrapper .dataTables_info {
+		color:grey;
+		font-size:0.75em;
+	}
+	</style>
+{%endblock%}
