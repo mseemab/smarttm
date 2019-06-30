@@ -1,5 +1,5 @@
 from rest_framework import generics
-from smarttm_web.models import Participation, Participation_Type, Club, Member, User, Meeting
+from smarttm_web.models import Participation, Participation_Type, Club, Member, User, Meeting, Attendance
 from smarttm_web.serializers import ParticipationSerializer, ParticipationTypeSerializer, ClubSerializer, \
     UserSerializer, MeetingSerializer, ParticipationSerializerForCat, MemberSerializer
 from rest_framework.views import APIView
@@ -204,3 +204,19 @@ class CustomAuthToken(ObtainAuthToken):
         })
 
 
+class ToggleAttendance(APIView):
+
+    def get(self, request, attendance_id):
+        try:
+
+            att = Attendance.objects.get(pk = attendance_id)
+            att.present = True if att.present is False else False
+            att.save()
+            return Response({
+                'status': 'success',
+                'present': att.present
+            })
+        except:
+            return Response({
+                'status': 'failed'
+            })

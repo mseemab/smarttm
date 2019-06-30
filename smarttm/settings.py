@@ -101,13 +101,20 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 # }
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'smarttm_db',
+    #     'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
+    #     'USER': 's00470150',
+    #     'PASSWORD': 'Huawei123',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smarttm_db',
-        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
-        'USER': 's00470150',
-        'PASSWORD': 'Huawei123',
-    }
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'smarttm_testing',
+            'HOST': '127.0.0.1',
+            'USER': 'root',
+            'PASSWORD': '',
+        }
 }
 
 

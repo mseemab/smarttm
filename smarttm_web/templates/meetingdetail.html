@@ -3,12 +3,61 @@
 
 {% block title %}Meeting Details of {{ meeting.meeting_date }} - SMARTTM {%endblock%}
 {% block body_block%}
-		<div class="container-fluid">
-			<h3>Meeting Details of {{ meeting.meeting_date }} </h3>
-		
-		</div>
+
 		<!-- <br /><br /> -->
 		<div class="container-fluid" >
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					<h3>Meeting Details of {{ meeting.meeting_date }}</h3>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="text-align:right;">
+					<h3>
+					<a href="{% url 'meeting_detail' meeting.pk %}"><button type="button" class="btn btn-outline-success" >
+					  <i class="fa fa-sync"></i> Refresh
+					</button></a>
+
+					<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ImportMeetingData">
+					  <i class="fa fa-file-excel"></i> Import Meeting Data
+					</button>
+					</h3>
+				</div>
+
+				<!-- Import Modal -->
+					<div class="modal fade" id="ImportMeetingData" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<form action="{% url 'import_meeting_data' %}" method="POST" enctype="multipart/form-data">
+									<div class="modal-header">
+										<h5 class="modal-title" id="exampleModalLabel">Import Meeting Data</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										{% csrf_token %}
+										<div class="alert alert-info">
+										  <strong>Info!</strong> Make sure the import file is <u>.xlsx</u> file and according to the template.
+										</div>
+										<br>
+
+										<br>
+										<b>Select File :</b>
+										<input type="file" name="importfile" required class="form-data" />
+										<input type="hidden" name="meeting_id" required class="form-data" value = "{{meeting.pk}}">
+										<br><br>
+
+										<br>
+
+									</div>
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-primary">Import Data</button>
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+			</div>
 
 			<hr />	
 			<br><br>
@@ -109,6 +158,42 @@
 				</div>
 
 			</div>
+			<div class="row">
+				<div class="table-wrapper">
+						<div class="table-title">
+
+						</div>
+
+						<table  class="table table-bordered" >
+							<thead>
+								<tr>
+									<td> # </td>
+									<th>Member ID</th>
+									<th>Member Name</th>
+									<th>Present</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for att_record in attendance %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ att_record.member.pk }}</td>
+                                        <td>{{ att_record.member.user.full_name }}</td>
+										<td id = "attendance-{{ att_record.pk }}">
+											{% if att_record.present %}<i class="fas fa-check"></i>{% endif %}
+											{% if att_record.present == False %}<i class="fas fa-times"></i>{% endif %}
+										</td>
+										<td id = "actions-{{ att_record.pk }}">{% if att_record.present %}<a onClick="ToggleAttendance({{ att_record.pk }})">Mark Absent</a>{% endif %}
+											{% if att_record.present == False %}<a onClick="ToggleAttendance({{ att_record.pk }})">Mark Present</a>{% endif %}
+										</td>
+										</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+				</div>
+
+			</div>
 		</div>
 
 		
@@ -116,37 +201,31 @@
 		
 		<script>
 			
-			function GetHistory(MemberID, ParticipationType){
-				console.log(MemberID)
+			function ToggleAttendance(AttendanceID){
+				console.log(AttendanceID)
 				 
 				 
-				$.get( "/api/getcatparticipations/"+MemberID+"/"+ParticipationType+"/",
+				$.get( "/api/toggleattendance/"+AttendanceID+"/",
 				function( data ) {
-				 
-				  console.log(data)
-				  createTableByForLoop(data)
-				  $("#RoleDetail").modal();
-//					$('#overlay').hide() 
-				});
+				console.log(data)
+
+				 if (data.status = 'success'){
+
+				 	if (data.present){
+				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<a onClick = "ToggleAttendance(' + AttendanceID.toString() + ')">Mark Absent</a>';
+				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-check"></i>'
+
+				 	}
+				 	else {
+				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<a onClick = "ToggleAttendance(' + AttendanceID.toString() + ')">Mark Present</a>';
+				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-times"></i>'
+				 	}
+
+				};
+			})
 			}
 		
-			function createTableByForLoop(data)
-			{
-			  var eTable="<table class='table table-striped small'><thead><tr><th>Name</th><th>Category</th><th>Dated</th</tr></thead><tbody>"
-			  
-			  for(var i=0; i<data.length;i++)
-			  {
-				
-				eTable += "<tr>";
-				eTable += "<td>"+data[i]['participation_type']['name']+"</td>";
-				eTable += "<td>"+data[i]['participation_type']['category']+"</td>";
-				eTable += "<td>"+data[i]['meeting']['meeting_date']+"</td>";
-			 
-				eTable += "</tr>";
-			  }
-			  eTable +="</tbody></table>";
-			  $('#divpost').html(eTable);
-			}
+
 		</script>
 
 {%endblock%}

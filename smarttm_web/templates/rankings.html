@@ -54,9 +54,12 @@
 							<table  class="table table-bordered" >
 							<thead>
 								<tr>
-									<th>Rank</th>
+									<th>#</th>
 									<th>Name</th>
-									<th>Table Topics Participation</th>
+									<th>Present (%)</th>
+<!--									<th>Last Two Meetings</th>-->
+									<th>TT Participation (%) </th>
+									<th>TT Participation</th>
 									<th>Speeches Participation</th>
 									<th>Evaluations</th>
 									<th>Basic Leadership roles</th>
@@ -68,6 +71,12 @@
 									<tr>
 										<td>{{ forloop.counter }}</td>
 										<td>{{ summ_Obj.member.user.full_name }}</td>
+										<td>{{ summ_Obj.attendance_percent }} %</td>
+<!--										<td>-->
+<!--											{% if sum_Obj.last_two_meetings_att %}Present{% endif %}-->
+<!--											{% if sum_Obj.last_two_meetings_att == False %}Absent{% endif %}-->
+<!--										</td>-->
+										<td>{{ summ_Obj.tt_percent }} %</td>
 										<td>{{ summ_Obj.tt_count }}</td>
 										<td>{{ summ_Obj.speeches_count }}</td>
 										<td>{{ summ_Obj.evaluation_count }}</td>

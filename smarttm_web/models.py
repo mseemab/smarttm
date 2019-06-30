@@ -68,9 +68,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         req_user = get_username()
-        if not req_user.is_anonymous:
-            self.created_by = req_user if self.created_by is None else self.created_by
-            self.updated_by = req_user
+        if not req_user is None:
+            if not req_user.is_anonymous:
+                self.created_by = req_user if self.created_by is None else self.created_by
+                self.updated_by = req_user
         self.created_date = timezone.now() if self.created_date is None else self.created_date
         self.updated_date = timezone.now()
 
@@ -131,7 +132,7 @@ class Position(models.Model):
 class Member(models.Model):
     user = models.ForeignKey(User, related_name='member_user', on_delete=models.CASCADE)
     active = models.BooleanField(default = True)
-    status = models.BooleanField(default = True)
+    paid_status = models.BooleanField(default = True)
     club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='members')
     club_membership_date = models.DateField('Date Joined', null = True, blank = True)
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
@@ -177,6 +178,7 @@ class EC_Member(models.Model):
 
 class Meeting(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    meeting_no = models.CharField(max_length=20)
     meeting_date = models.DateField('Meeting Date')
     created_date = models.DateTimeField('Date Created', null = True, blank = True)
     updated_date = models.DateTimeField('Date Updated', null = True, blank = True)
@@ -194,6 +196,29 @@ class Meeting(models.Model):
 
     def __str__(self):
         return str(self.meeting_date)+'__'+self.club.name
+
+class Attendance(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    present = models.BooleanField(default=False)
+    created_date = models.DateTimeField('Date Created', null=True, blank=True)
+    updated_date = models.DateTimeField('Date Updated', null=True, blank=True)
+    created_by = models.ForeignKey(User, related_name='attendance_created_by', on_delete=models.CASCADE, null=True,
+                                   blank=True)
+    updated_by = models.ForeignKey(User, related_name='attendance_updated_by', on_delete=models.CASCADE, null=True,
+                                   blank=True)
+
+    def save(self, *args, **kwargs):
+
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+
+        super(Attendance, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.meeting.club.name + '__' +str(self.meeting.meeting_date) + '__' + self.member.user.full_name
 
 class Participation_Type(models.Model):
     name = models.CharField(max_length = 200)
@@ -270,6 +295,9 @@ class Summary(models.Model):
     basic_role_count = models.IntegerField(default = 0)
     adv_role_count = models.IntegerField(default = 0)
     evaluation_count = models.IntegerField(default = 0)
+    attendance_percent = models.IntegerField(default = 0)
+    last_two_meetings_att = models.BooleanField(default=True)
+    tt_percent = models.IntegerField(default = 0)
 
     def save(self, *args, **kwargs):
 
@@ -288,3 +316,5 @@ class Meeting_Summary(models.Model):
     speech_count = models.IntegerField(default=0)
     tt_count = models.IntegerField(default=0)
     prep_speech_count = models.IntegerField(default=0)
+    members_present_count = models.IntegerField(default=0)
+    members_absent_count = models.IntegerField(default=0)

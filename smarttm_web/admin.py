@@ -15,7 +15,7 @@ class ParticipationTypeAdmin(admin.ModelAdmin):
 
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'club', 'status', 'is_EC')
+    list_display = ('user', 'club', 'paid_status', 'active', 'is_EC')
 
 class ParticipationAdmin(admin.ModelAdmin):
     list_display = ('member', 'club', 'participation_type', 'meeting')

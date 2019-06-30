@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from smarttm_web.models import Meeting, User, Member, Club, Participation, Summary, Participation_Type
+from smarttm_web.models import Meeting, User, Member, Club, Participation, Summary, Participation_Type, Attendance
 from django.shortcuts import render_to_response
 import pdb
 from django.shortcuts import redirect
@@ -11,9 +11,10 @@ import pandas as pd
 from django.utils import timezone
 from datetime import date
 from django.db.models import Avg
-import numpy as np
+import math
 from django.contrib.auth.decorators import login_required
 from smarttm_web.forms import UserForm
+
 # Create your views here.
 
 
@@ -53,15 +54,15 @@ def login_user(request):
 
                 request.session.modified = True
                 
-                return redirect('/smarttm_web/summary')
+                return redirect('ranking_summary')
                 
             else:
                 messages.warning(request, 'Your account is not activated') 
-                response = redirect('/accounts/login/')
+                response = redirect('LoginUser')
                 return response
         else:
            messages.warning(request, 'Invalid email/password.') 
-           response = redirect('/accounts/login/')
+           response = redirect('LoginUser')
            return response
     else:
         
@@ -90,7 +91,7 @@ def set_club(request, club_id):
     request.session['SelectedClub'] = [club_details.pk,club_details.name]
     request.session.modified = True
    
-    return redirect('/smarttm_web/summary')
+    return redirect('ranking_summary')
 
 
 
@@ -126,7 +127,7 @@ def ImportMembers(request):
             club_key = request.session['SelectedClub'][0]
             club_obj = Club.objects.get(pk=club_key)
 
-            club_members = list(Member.objects.filter(club=club_obj, status = True))
+            club_members = list(Member.objects.filter(club=club_obj, active = True))
 
 
             for index, row in df.iterrows():
@@ -146,15 +147,16 @@ def ImportMembers(request):
 
                 )
 
-                status = True if row['status (*)'] == 'paid' else False
-
+                paid_status = True if row['status (*)'] == 'paid' else False
+                active = True
                 is_ec = False if row['Current Position'] is None or row['Current Position'] == 0 else True
 
                 user_list.append(user_obj)
                 member_obj, created = Member.objects.update_or_create(
                     club = club_obj, user = user_obj,
-                    defaults={'status' : status,
-                              'is_EC': is_ec}
+                    defaults={'paid_status' : paid_status,
+                              'is_EC': is_ec,
+                              'active': active}
                 )
 
                 member_list.append(member_obj)
@@ -162,17 +164,17 @@ def ImportMembers(request):
             club_member_ids = [member.pk for member in club_members]
             new_member_ids = [member.pk for member in member_list]
             unpaid_member_ids = tuple(set(club_member_ids) - set(new_member_ids))
-            Member.objects.filter(id__in = unpaid_member_ids).update(status = False, is_EC = False)
+            Member.objects.filter(id__in = unpaid_member_ids).update(paid_status = False, is_EC = False, active = False)
 
-            messages.warning(request, 'Members imported.')
+            messages.success(request, 'Members imported.')
 
-            return redirect('ManageClub')
+            return redirect('manage_club')
             
         else:
             messages.warning(request, 'Input Sheet does not follow template guidelines.') 
-            return redirect('ManageClub')
+            return redirect('manage_club')
         
-    return redirect('ManageClub')
+    return redirect('manage_club')
 
 @login_required()
 def summary(request):
@@ -202,10 +204,22 @@ def summary(request):
         for club_mem in club_members:
             sum_obj = Summary()
             sum_obj.member = club_mem
-            sum_obj.tt_count = partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Table Topic')).count()
+            tt_count = partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Table Topic')).count()
+            sum_obj.tt_count = tt_count
             sum_obj.speeches_count = partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Prepared Speech')).count()
             sum_obj.evaluation_count =partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Evaluation')).count()
-            
+            presents = Attendance.objects.filter(member = club_mem, present = True).count()
+            absents = Attendance.objects.filter(member=club_mem, present=False).count()
+            sum_obj.attendance_percent = math.ceil((presents/(presents+absents))*100) if presents+absents != 0 else 0
+            sum_obj.tt_percent = math.ceil((tt_count/presents)*100) if presents != 0 else 0
+
+            # mem_att = Attendance.objects.filter(member = club_mem).order_by('-meeting')[:2]
+            # if mem_att.filter(present = False).count() == mem_att.all().count():
+            #     sum_obj.last_two_meetings_att = False
+            # else:
+            #     sum_obj.last_two_meetings_att = True
+
+
             for part_type in category_adv:
                 sum_obj.adv_role_count = sum_obj.adv_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
             for part_type in category_basic:
@@ -215,7 +229,7 @@ def summary(request):
 
         return render(request, 'rankings.html' , { 'page_title':'User Rankings for '+ club_obj.name , 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
     else:
-        response = redirect('/accounts/login/')
+        response = redirect('LoginUser')
         return response
 
 
@@ -239,15 +253,15 @@ def my_space(request):
 
         roles_performed_count = user_participations.filter(member__in = memberships, participation_type__in = role_type).values('participation_type').distinct().count()
 
-        ah_count_avg = user_participations.aggregate(Avg('ah_count'))
+        ah_count_avg = user_participations.aggregate(Avg('ah_count'))['ah_count__avg'] if user_participations.aggregate(Avg('ah_count'))['ah_count__avg'] is not None else 0
 
         prepared_speech_count = user_participations.filter(member__in=memberships, participation_type =prepared_speech_parti).count()
         tt_speech_count = user_participations.filter(member__in=memberships, participation_type=tt_speech_parti).count()
         eval_speech_count = user_participations.filter(member__in=memberships, participation_type=eval_speech_parti).count()
 
-        return render(request, 'myspace.html', {'Roles_Performed': roles_performed_count, 'prepared_speech_count':prepared_speech_count, 'tt_speech_count':tt_speech_count, 'ah_count_avg': int(np.ceil(ah_count_avg['ah_count__avg'])), 'eval_speech_count':eval_speech_count } )
+        return render(request, 'myspace.html', {'Roles_Performed': roles_performed_count, 'prepared_speech_count':prepared_speech_count, 'tt_speech_count':tt_speech_count, 'ah_count_avg': ah_count_avg, 'eval_speech_count':eval_speech_count } )
     else:
-        response = redirect('/accounts/login/')
+        response = redirect('LoginUser')
         return response
 
 @login_required()
@@ -262,5 +276,11 @@ def club_management(request):
         return render(request, 'manageclub.html', { 'club_members' : club_members})
 
     else:
-        response = redirect('/accounts/login/')
+        response = redirect('LoginUser')
         return response
+
+
+
+
+
+
