@@ -20,7 +20,7 @@ from smarttm_web.forms import UserForm
 
 @login_required()
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return redirect('ranking_summary')
 
 
         
