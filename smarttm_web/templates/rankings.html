@@ -4,6 +4,7 @@
 {% block title %}Member rankings - SMARTTM {%endblock%}
 {% block body_block%}
 		<div class="container-fluid">
+			<br><br>
 			<h3>Participation Rankings</h3>
 		
 		</div>
@@ -13,31 +14,31 @@
 			<hr />	
 			<br><br>
 			<div class = "row">
-				<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="padding-top: 6px" >
-					<b>Date Range</b>
+				<div class="col-sm" style="padding-top: 6px" >
+
 				</div>
-				
-					<form action="" method="POST">
+				<div class="col-sm">
+
+					<form action="" method="POST" class="form-inline">
 							{% csrf_token %}
-							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+								<b>Date Range&nbsp;&nbsp;</b>
 								<input type="hidden" name="ToolID" id="ToolID" value="3" />
-								<input type="date" name="StartDate" id="StartDate" placeholder="From Date" class="form-control" required />
-							</div>
-							
-							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+								<input type="date" name="StartDate" id="StartDate" placeholder="From Date" class="form-control" required /><span>&nbsp;&nbsp;to&nbsp;&nbsp;</span>
 								<input type="date" name="EndDate" id="EndDate" placeholder="To Date" class="form-control"  required />
-							</div>
+
 							
-							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+								&nbsp;&nbsp;
 								<button class="btn btn-primary" type="Submit" ><i class="fas fa-filter"></i> Filter</button>
-								<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Update Data</button>
-							</div>
+
+
 					</form>
-					 
+					</div>
 			<br>
 			<br>
 			<br>
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+			</div>
+			<div class="row">
+			<div class="col-sm" >
 						
 						{% if FromDate != '' %}
 							<h4>Time Period: <span class='badge label-primary'>{{ FromDate }}</span> to <span class='badge label-primary'>{{ ToDate }}</span></h4>
@@ -46,9 +47,10 @@
 						{% endif %}
 						<br>
 			</div>
+			</div>
 			<div class="row">
 				  
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+				<div class="col-sm" >
 					<div class="table-wrapper">
 						<div class="table-title">
 							<table  class="table table-bordered" >
@@ -96,14 +98,17 @@
 		
 		
 		<!-- Modal -->
-		
-		<div class="modal fade" id="RoleDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-		  <div class="modal-dialog" role="document">
-			<div class="modal-content">
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Roles Performed</h4>
-			  </div>
+
+		<div class="modal fade" id="RoleDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Roles Performed</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
 			  <div class="modal-body">
 				<div class="row">
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >

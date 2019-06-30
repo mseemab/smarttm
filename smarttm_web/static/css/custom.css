@@ -100,16 +100,16 @@ th{
 text-align: center;
 }
 
-/* .navbar-brand { */
-	/* color:#fff !important; */
-	/* margin-top: -7px; */
-	/* font-weight: bold; */
+.navbar-brand {
+	color:#fff !important;
+	margin-top: -7px;
+	font-weight: bold;
 	
-/* } */
+}
 
-/* .navbar-dark .navbar-nav .nav-link { */
-    /* color: rgba(255, 255, 255, 0.83); */
-/* } */
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.83);
+}
 /* .navbar-nav .nav-item .nav-link { */
 	/* color:#fff !important; */
 	/* margin-right:10px; */
