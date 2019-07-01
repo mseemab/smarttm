@@ -26,7 +26,7 @@ SECRET_KEY = '92cr79yilaogsoehdd4cl(znn0v*wbb!xvme6&g_gw&ivu&d$s'
 
 AUTH_USER_MODEL = 'smarttm_web.User'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 REST_FRAMEWORK = {
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -101,20 +102,20 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 # }
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'smarttm_db',
-    #     'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
-    #     'USER': 's00470150',
-    #     'PASSWORD': 'Huawei123',
-    # }
     'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'smarttm_testing',
-            'HOST': '127.0.0.1',
-            'USER': 'root',
-            'PASSWORD': '',
-        }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'smarttm_db',
+        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
+        'USER': 's00470150',
+        'PASSWORD': 'Huawei123',
+    }
+    # 'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'NAME': 'smarttm_testing',
+    #         'HOST': '127.0.0.1',
+    #         'USER': 'root',
+    #         'PASSWORD': '',
+    #     }
 }
 
 
@@ -156,8 +157,27 @@ USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/smarttm_web/summary/1'
 
-STATIC_URL = '/static/'
+#STATIC_URL = 'https://s3.us-east-2.amazonaws.com/smarttm.static/static/'
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
+
+AWS_LOCATION = 'static'
+AWS_ACCESS_KEY_ID ='AKIAJHWKWBVGIQT5A5BQ'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME ='smarttm.static'
+AWS_S3_CUSTOM_DOMAIN='%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+     'CacheControl': 'max-age=86400',
+}
+DEFAULT_FILE_STORAGE = 'app.storage_backends.MediaStorage'
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_URL='https://s3.us-east-2.amazonaws.com/smarttm.static/static/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystemFinder',    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+AWS_DEFAULT_ACL = None
