@@ -223,7 +223,7 @@ class Attendance(models.Model):
 
         data = Attendance.objects.raw('SELECT att.id, att.member_id, (SELECT ifnull(count(*), 0) \
 FROM smarttm_web_attendance as abc \
-WHERE abc.member_id = att.member_id and abc.present = 0 and abc.id > ifnull((SELECT mini_attendance.id FROM smarttm_web_attendance as mini_attendance WHERE mini_attendance.member_id = att.member_id and mini_attendance.present = 1 order by mini_attendance.id desc LIMIT 1),1) ) as count_absents \
+WHERE abc.member_id = att.member_id and abc.present = 0 and abc.id > ifnull((SELECT mini_attendance.id FROM smarttm_web_attendance as mini_attendance WHERE mini_attendance.member_id = att.member_id and mini_attendance.present = 1 order by mini_attendance.id desc LIMIT 1),0) ) as count_absents \
 FROM smarttm_web_attendance as att \
 WHERE att.member_id in (%s)\
  group by att.member_id \

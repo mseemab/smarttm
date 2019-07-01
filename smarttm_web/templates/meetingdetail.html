@@ -6,11 +6,12 @@
 
 		<!-- <br /><br /> -->
 		<div class="container-fluid" >
+			<br><br>
 			<div class="row">
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<div class="col-sm">
 					<h3>Meeting Details of {{ meeting.meeting_date }}</h3>
 				</div>
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="text-align:right;">
+				<div class="col-sm" style="text-align:right;">
 					<h3>
 					<a href="{% url 'meeting_detail' meeting.pk %}"><button type="button" class="btn btn-outline-success" >
 					  <i class="fa fa-sync"></i> Refresh
@@ -65,10 +66,12 @@
 
 
 			<div class="row">
-				<h4>Speeches Detail </h4>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
-					<div class="table-wrapper">
-						<div class="table-title">
+
+				<div class="col-sm" >
+					<center><h4>Speeches Detail </h4></center>
+					<br>
+					<div class="table-responsive">
+
 							<table  class="table table-bordered" >
 							<thead>
 								<tr>
@@ -95,18 +98,16 @@
 							</tbody>
 							</table>
 						</div>
-					</div>
+
 				</div>
 				
 			</div>
             <div class="row">
-				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
+				<div class="col-sm" >
 				<center><h4>Basic Roles</h4></center>
 				<br>
-					<div class="table-wrapper">
-						<div class="table-title">
+					<div class="table-responsive">
 
-						</div>
 
 						<table  class="table table-bordered" >
 							<thead>
@@ -128,13 +129,11 @@
 						</table>
 					</div>
 				</div>
-				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" >
+				<div class="col-sm" >
 				<center><h4>Advanced Roles</h4></center>
 				<br>
-					<div class="table-wrapper">
-						<div class="table-title">
+					<div class="table-responsive">
 
-						</div>
 
 						<table  class="table table-bordered" >
 							<thead>
@@ -159,16 +158,17 @@
 
 			</div>
 			<div class="row">
-				<div class="table-wrapper">
-						<div class="table-title">
+				<div class = 'col-sm'>
+					<center><h4>Attendance Details</h4></center>
+					<br>
+				<div class="table-responsive">
 
-						</div>
 
 						<table  class="table table-bordered" >
 							<thead>
 								<tr>
-									<td> # </td>
-									<th>Member ID</th>
+									<th> # </th>
+
 									<th>Member Name</th>
 									<th>Present</th>
 									<th>Actions</th>
@@ -178,21 +178,27 @@
 								{% for att_record in attendance %}
 									<tr>
 										<td>{{ forloop.counter }}</td>
-										<td>{{ att_record.member.pk }}</td>
                                         <td>{{ att_record.member.user.full_name }}</td>
 										<td id = "attendance-{{ att_record.pk }}">
 											{% if att_record.present %}<i class="fas fa-check"></i>{% endif %}
 											{% if att_record.present == False %}<i class="fas fa-times"></i>{% endif %}
 										</td>
-										<td id = "actions-{{ att_record.pk }}">{% if att_record.present %}<a onClick="ToggleAttendance({{ att_record.pk }})">Mark Absent</a>{% endif %}
-											{% if att_record.present == False %}<a onClick="ToggleAttendance({{ att_record.pk }})">Mark Present</a>{% endif %}
+										<td id = "actions-{{ att_record.pk }}">
+<!--											<a onClick="ToggleAttendance({{ att_record.pk }})">-->
+<!--												{% if att_record.present %}Mark Absent{% endif %}-->
+<!--												{% if att_record.present == False %}Mark Present{% endif %}-->
+<!--											</a>-->
+											<button type="button" class="btn btn-primary btn-sm" onclick="ToggleAttendance({{ att_record.pk }})">
+												{% if att_record.present %}Mark <i class="fas fa-times"></i>{% endif %}
+												{% if att_record.present == False %}Mark <i class="fas fa-check"></i>{% endif %}
+											</button>
 										</td>
 										</tr>
 								{% endfor %}
 							</tbody>
 						</table>
 				</div>
-
+			</div>
 			</div>
 		</div>
 
@@ -212,12 +218,12 @@
 				 if (data.status = 'success'){
 
 				 	if (data.present){
-				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<a onClick = "ToggleAttendance(' + AttendanceID.toString() + ')">Mark Absent</a>';
+				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="ToggleAttendance(' + AttendanceID.toString() + ')">Mark <i class="fas fa-times"></i></button>';
 				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-check"></i>'
 
 				 	}
 				 	else {
-				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<a onClick = "ToggleAttendance(' + AttendanceID.toString() + ')">Mark Present</a>';
+				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="ToggleAttendance(' + AttendanceID.toString() + ')">Mark <i class="fas fa-check"></i></button>';
 				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-times"></i>'
 				 	}
 

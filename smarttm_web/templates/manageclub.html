@@ -67,8 +67,8 @@
 			<div class="row">
 				  
 				<div class="col-sm" >
-					<div class="table-wrapper">
-						<div class="table-title">
+					<div class="table-title table-responsive">
+
 							<table  class="table table-bordered" >
 							<thead>
 								<tr>
@@ -90,14 +90,17 @@
 										<td>{{ summ_Obj.user.full_name }}</td>
 										<td>{{ summ_Obj.user.email }}</td>
 										<td>{{ summ_Obj.user.mobile_phone }}</td>
-										<td>{{ summ_Obj.paid_status }}</td>
-										<td>{% if summ_Obj.is_EC == True  %} {{ summ_Obj.is_EC }} {% endif %}</td>
+										<td>
+											{% if summ_Obj.paid_status %}Paid{% endif%}
+											{% if summ_Obj.paid_status == False %}Unpaid{% endif%}
+										</td>
+										<td>{% if summ_Obj.is_EC == True  %} Yes {% endif %}</td>
 									</tr>
 								{% endfor %}
 							</tbody>
 							</table>
 						</div>
-					</div>
+
 				</div>
 				
 			</div>
