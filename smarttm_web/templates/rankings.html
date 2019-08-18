@@ -171,8 +171,17 @@
 	<script type="text/javascript">
 
 		$(document).ready(function() {
-			$('#example').dataTable({
-				"bPaginate": false,
+			$('#example').DataTable({
+				'bPaginate': false,
+				dom: 'Bfrtip',
+				buttons: [
+				{
+					extend: 'excel',
+					text: 'Export Excel',
+					className: 'btn btn-outline-success'
+				}
+				]
+
 
 			});
 		} );
@@ -212,5 +221,11 @@
 		color:grey;
 		font-size:0.75em;
 	}
+
+	.buttons-html5 {
+	margin-bottom: 6px;
+	float: left;
+	}
+
 	</style>
 {%endblock%}

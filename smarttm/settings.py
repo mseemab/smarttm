@@ -94,7 +94,7 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'smarttm_db',
+#         'NAME': 'smarttm_testing',
 #         'HOST': 'localhost',
 #         'USER': 'root',
 #         'PASSWORD': '',
@@ -109,6 +109,7 @@ DATABASES = {
         'USER': 's00470150',
         'PASSWORD': 'Huawei123',
     }
+}
     # 'default': {
     #         'ENGINE': 'django.db.backends.mysql',
     #         'NAME': 'smarttm_testing',
@@ -116,7 +117,7 @@ DATABASES = {
     #         'USER': 'root',
     #         'PASSWORD': '',
     #     }
-}
+
 
 
 # Password validation
