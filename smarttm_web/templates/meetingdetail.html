@@ -164,7 +164,7 @@
 				<div class="table-responsive">
 
 
-						<table  class="table table-bordered" >
+						<table  class="table table-bordered" id = "attendances" >
 							<thead>
 								<tr>
 									<th> # </th>
@@ -180,8 +180,8 @@
 										<td>{{ forloop.counter }}</td>
                                         <td>{{ att_record.member.user.full_name }}</td>
 										<td id = "attendance-{{ att_record.pk }}">
-											{% if att_record.present %}<i class="fas fa-check"></i>{% endif %}
-											{% if att_record.present == False %}<i class="fas fa-times"></i>{% endif %}
+											{% if att_record.present %}<i class="fas fa-check"></i> Present{% endif %}
+											{% if att_record.present == False %}<i class="fas fa-times"></i> Absent{% endif %}
 										</td>
 										<td id = "actions-{{ att_record.pk }}">
 <!--											<a onClick="ToggleAttendance({{ att_record.pk }})">-->
@@ -205,7 +205,7 @@
 		
 		<!-- Modal -->
 		
-		<script>
+		<script type="text/javascript">
 			
 			function ToggleAttendance(AttendanceID){
 				console.log(AttendanceID)
@@ -219,19 +219,25 @@
 
 				 	if (data.present){
 				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="ToggleAttendance(' + AttendanceID.toString() + ')">Mark <i class="fas fa-times"></i></button>';
-				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-check"></i>'
+				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-check"></i> Present'
 
 				 	}
 				 	else {
 				 		document.getElementById('actions-'+AttendanceID.toString()).innerHTML = '<button type="button" class="btn btn-primary btn-sm" onclick="ToggleAttendance(' + AttendanceID.toString() + ')">Mark <i class="fas fa-check"></i></button>';
-				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-times"></i>'
+				 		document.getElementById('attendance-'+AttendanceID.toString()).innerHTML = '<i class="fas fa-times"></i> Absent'
 				 	}
 
 				};
 			})
 			}
-		
 
+
+			$(document).ready(function() {
+				$('#attendances').dataTable({
+					"bPaginate": false,
+
+				});
+			} );
 		</script>
 
 {%endblock%}

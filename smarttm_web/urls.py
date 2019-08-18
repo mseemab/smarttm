@@ -3,18 +3,18 @@ from . import views
 from django.urls import path, include # new
 from smarttm_web import meeting_views
 urlpatterns = [
-   path('meeting/<int:meeting_id>/', meeting_views.meeting, name = 'meeting_detail'),
+   path('meetings/<int:meeting_id>/', meeting_views.meeting, name = 'meeting_detail'),
    path('', views.index, name = 'index'),
    path('summary/', views.summary, name = 'ranking_summary'),
-   path('ManageClub/', views.club_management, name = 'manage_club'),
-   path('LoginUser/', views.login_user, name = 'LoginUser'),
-   path('register/', views.register , name = 'register'),
-   path('ClubMeetings/', meeting_views.meetings_view, name = 'meeting_summary'),
-   path('MySpace', views.my_space , name = 'my_space'),
-   path('SetClub/<int:club_id>/', views.set_club, name = 'SetClub'),
-   path('ImportMembers/', views.ImportMembers, name = 'import_members'),
-   path('AddMeeting/', meeting_views.add_meeting, name = 'add_meeting'),
-   path('ImportMeetingData/', meeting_views.import_meeting_data, name = 'import_meeting_data'),
+   path('club/members/', views.club_management, name = 'manage_club'),
+   path('accounts/login/', views.login_user, name = 'LoginUser'),
+   path('accounts/register/', views.register , name = 'register'),
+   path('meetings/', meeting_views.meetings_view, name = 'meeting_summary'),
+   path('my-space', views.my_space , name = 'my_space'),
+   path('set-club/<int:club_id>/', views.set_club, name = 'SetClub'),
+   path('club/members/import/', views.ImportMembers, name = 'import_members'),
+   path('meetings/create/', meeting_views.add_meeting, name = 'add_meeting'),
+   path('meetings/participations/import/', meeting_views.import_meeting_data, name = 'import_meeting_data'),
 ]
 
 

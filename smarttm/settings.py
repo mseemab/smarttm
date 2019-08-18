@@ -166,7 +166,7 @@ TEMPLATE_DIRS = (
 AWS_LOCATION = 'static'
 AWS_ACCESS_KEY_ID ='AKIAJHWKWBVGIQT5A5BQ'
 AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME ='smarttm.static'
+AWS_STORAGE_BUCKET_NAME ='smarttm-static'
 AWS_S3_CUSTOM_DOMAIN='%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
      'CacheControl': 'max-age=86400',
@@ -176,7 +176,7 @@ STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_URL='https://s3.us-east-2.amazonaws.com/smarttm.static/static/'
+STATIC_URL='https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystemFinder',    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
