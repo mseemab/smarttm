@@ -3,8 +3,15 @@
 
 
 body {
-	color: #566787;
-	font-family: 'Varela Round', sans-serif;
+    color: #566787;
+    font-family: 'Varela Round', sans-serif;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:100vh;
+}
 }
 						
 
