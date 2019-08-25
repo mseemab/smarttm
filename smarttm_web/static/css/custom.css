@@ -209,6 +209,10 @@ color: grey;
 	padding: 6px;
 }
 
+table.table a {
+    margin: 0;
+    color: #007BFF;
+}
 /* @media (max-width: 1170px) { */
     /* .navbar-header { */
         /* float: none; */

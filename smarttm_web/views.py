@@ -204,10 +204,13 @@ def summary(request):
 
         club_member_ids = [member.pk for member in club_members]
         latest_absents = Attendance.get_latest_absents(club_member_ids)
+        participation_count = Participation.get_participation_count(club_member_ids)
         latest_absents_dict = {}
         for absent in latest_absents:
             latest_absents_dict[absent.member_id] = absent.count_absents
-
+        part_percent_dict = {}
+        for part_count in participation_count:
+            part_percent_dict[part_count.id] = math.ceil((part_count.TotalParticipations/part_count.TotalAttendance)*100) if part_count.TotalAttendance != 0 else 0
         for club_mem in club_members:
             sum_obj = Summary()
             sum_obj.member = club_mem
@@ -215,14 +218,25 @@ def summary(request):
             sum_obj.tt_count = tt_count
             sum_obj.speeches_count = partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Prepared Speech')).count()
             sum_obj.evaluation_count =partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Evaluation')).count()
-            presents = Attendance.objects.filter(member = club_mem, present = True).count()
-            absents = Attendance.objects.filter(member=club_mem, present=False).count()
+            if request.method == "POST":
+                presents = Attendance.objects.filter(member = club_mem, present = True, created_date__range=(FromDate, ToDate)).count()
+                absents = Attendance.objects.filter(member=club_mem, present=False, created_date__range=(FromDate, ToDate)).count()
+            else:
+                presents = Attendance.objects.filter(member=club_mem, present=True).count()
+                absents = Attendance.objects.filter(member=club_mem, present=False).count()
+
             sum_obj.attendance_percent = math.ceil((presents/(presents+absents))*100) if presents+absents != 0 else 0
             sum_obj.tt_percent = math.ceil((tt_count/presents)*100) if presents != 0 else 0
+
             try:
                 sum_obj.last_absents = latest_absents_dict[club_mem.id]
             except:
                 sum_obj.last_absents = 0
+            try:
+                sum_obj.part_percent = part_percent_dict[club_mem.id]
+            except:
+                sum_obj.sum_obj.part_percent = 0
+
             # mem_att = Attendance.objects.filter(member = club_mem).order_by('-meeting')[:2]
             # if mem_att.filter(present = False).count() == mem_att.all().count():
             #     sum_obj.last_two_meetings_att = False

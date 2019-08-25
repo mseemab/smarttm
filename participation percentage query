@@ -1,0 +1,9 @@
+SELECT member_main.id, 
+(SELECT count(member.id)
+FROM smarttm_web_member member LEFT JOIN smarttm_web_attendance attendance on member.id = attendance.member_id, smarttm_web_meeting meeting
+WHERE meeting.id = attendance.meeting_id and attendance.present = 1 and member.id = member_main.id) as TotalAttendance, 
+(SELECT COUNT(DISTINCT(CONCAT(part.member_id, '_', part.meeting_id)))
+FROM smarttm_web_member member LEFT JOIN smarttm_web_participation part on member.id = part.member_id, smarttm_web_meeting meeting
+WHERE meeting.id = part.meeting_id and member.id = member_main.id) as TotalParticipations
+FROM `smarttm_web_member` member_main
+WHERE member_main.id IN (1,2,3,4,5)

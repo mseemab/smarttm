@@ -23,7 +23,7 @@ def meetings_view(request):
         meeting_date = meeting.meeting_date
         speech_count = participations.filter(meeting = meeting, participation_type__id__in = part_type_speech).count()
         tt_count = participations.filter(meeting = meeting, participation_type = part_type_tt).count()
-        prep_speech_count = participations.filter(meeting=meeting, participation_type=part_type_tt).count()
+        prep_speech_count = participations.filter(meeting=meeting, participation_type=part_type_prep).count()
         present_count = Attendance.objects.filter(meeting = meeting, present = True).count()
         absent_count = Attendance.objects.filter(meeting=meeting, present = False).count()
         meeting_summary.append(Meeting_Summary(meeting = meeting, speech_count = speech_count,
