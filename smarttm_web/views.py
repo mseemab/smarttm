@@ -350,5 +350,7 @@ def send_participation_email(request, club_id):
                                                    'club': club.name,
                                                    'member_name': str(mem.user.full_name)
                                                })
-
-        send_mail('Participation Summary of %s' %mem.user.full_name, 'Participation Summary of %s' %mem.user.full_name, 'smarttm@toastmasters.pk', [mem.user.email], fail_silently=False, html_message=html_message)
+        try:
+            send_mail('Participation Summary of %s' %mem.user.full_name, 'Participation Summary of %s' %mem.user.full_name, 'smarttm@toastmasters.pk', [mem.user.email], fail_silently=True, html_message=html_message)
+        except:
+            continue
