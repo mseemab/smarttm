@@ -94,7 +94,7 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smarttm_testing',
+        'NAME': 'smarttm_db',
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': '',
@@ -175,3 +175,11 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystemFinder',    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 AWS_DEFAULT_ACL = None
+
+#email settings
+
+EMAIL_HOST = 'mail.viperd.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'smarttm@toastmasters.pk'
+EMAIL_HOST_PASSWORD = 'K3ratOma-o'
+EMAIL_USE_TLS = True

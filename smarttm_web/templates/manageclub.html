@@ -13,11 +13,11 @@
 				</div>
 				<div class="col-sm" style="text-align:right;">
 					<h3>
-					<a href="/smarttm_web/ManageClub"><button type="button" class="btn btn-outline-success" >
-					  <i class="fa fa-sync"></i> Refresh
+					<a href="{% url 'send_participation_email' club_id=request.session.SelectedClub.0 %}"><button type="button" class="btn btn-outline-primary btn-rounded" >
+					  <i class="far fa-paper-plane"></i> Send Participation Email
 					</button></a>
 					
-					<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ImportModelModal">
+					<button type="button" class="btn btn-outline-primary btn-rounded" data-toggle="modal" data-target="#ImportModelModal">
 					  <i class="fa fa-file-excel"></i> Import Members
 					</button> 
 					</h3>

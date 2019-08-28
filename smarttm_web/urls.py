@@ -15,6 +15,7 @@ urlpatterns = [
    path('club/members/import/', views.ImportMembers, name = 'import_members'),
    path('meetings/create/', meeting_views.add_meeting, name = 'add_meeting'),
    path('meetings/participations/import/', meeting_views.import_meeting_data, name = 'import_meeting_data'),
+   path('club/<int:club_id>/participationemail', views.send_participation_email, name = 'send_participation_email'),
 ]
 
 

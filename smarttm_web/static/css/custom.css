@@ -213,6 +213,11 @@ table.table a {
     margin: 0;
     color: #007BFF;
 }
+
+.navbar.navbar-dark .breadcrumb .nav-item.active>.nav-link, .navbar.navbar-dark .navbar-nav .nav-item.active>.nav-link {
+    background-color: rgba(255,255,255,.1);
+    border-radius: 5px;
+}
 /* @media (max-width: 1170px) { */
     /* .navbar-header { */
         /* float: none; */
