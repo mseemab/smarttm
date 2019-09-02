@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from smarttm_web.forms import UserForm
 from django.core.mail import send_mail
 from django.template import loader
-
+import threading
 # Create your views here.
 
 
@@ -300,7 +300,7 @@ def club_management(request):
         club_obj = Club.objects.get(pk=club_key)
             
         club_members = club_obj.members.filter(active=True)
-        
+
         return render(request, 'manageclub.html', { 'club_members' : club_members})
 
     else:
@@ -309,27 +309,39 @@ def club_management(request):
 
 @login_required()
 def send_participation_email(request, club_id):
+    try:
+        t = threading.Thread(target=email_send_thread, args=(club_id,))
+        t.daemon=True
+        t.start()
+    except:
+        pass
+    messages.info(request, 'Email will be sent to the members in background.')
+    return redirect('manage_club')
+
+
+def email_send_thread(club_id):
     club = Club.objects.get(id=club_id)
-    club_mems = Member.objects.filter(club_id = club_id, active = True)
+    club_mems = Member.objects.filter(club_id=club_id, active=True)
     part_types = Participation_Type.objects.all()
-    tt = part_types.get(name = 'Table Topic')
-    speech = part_types.get(name = 'Prepared Speech')
-    evaluation = part_types.get(name = 'Evaluation')
-    big_three = part_types.filter(category = 'Role-Advanced')
+    tt = part_types.get(name='Table Topic')
+    speech = part_types.get(name='Prepared Speech')
+    evaluation = part_types.get(name='Evaluation')
+    big_three = part_types.filter(category='Role-Advanced')
     mem_list = [mem.id for mem in club_mems]
     participation_count = Participation.get_participation_count(mem_list)
     part_percent_dict = {}
     for part_count in participation_count:
         part_percent_dict[part_count.id] = [part_count.TotalParticipations]
-        part_percent_dict[part_count.id].append(math.ceil((part_count.TotalParticipations / part_count.TotalAttendance) * 100)\
-            if part_count.TotalAttendance != 0 else 0)
+        part_percent_dict[part_count.id].append(
+            math.ceil((part_count.TotalParticipations / part_count.TotalAttendance) * 100) \
+                if part_count.TotalAttendance != 0 else 0)
     for mem in club_mems:
 
-        meets_attended = Attendance.objects.filter(member_id = mem.id, present = True).count()
+        meets_attended = Attendance.objects.filter(member_id=mem.id, present=True).count()
         meets_total = Attendance.objects.filter(member_id=mem.id).count()
-        att_percent = math.ceil((meets_attended/meets_total)*100) if meets_total != 0 else 0
+        att_percent = math.ceil((meets_attended / meets_total) * 100) if meets_total != 0 else 0
         tt_count = Participation.objects.filter(participation_type=tt, member=mem).count()
-        tt_percent = math.ceil((tt_count/meets_attended)*100) if meets_attended != 0 else 0
+        tt_percent = math.ceil((tt_count / meets_attended) * 100) if meets_attended != 0 else 0
         speech_count = Participation.objects.filter(participation_type=speech, member=mem).count()
         evaluation_count = Participation.objects.filter(participation_type=evaluation, member=mem).count()
         big_three_count = Participation.objects.filter(participation_type__in=big_three, member=mem).count()
@@ -337,20 +349,25 @@ def send_participation_email(request, club_id):
         part_percent = part_percent_dict[mem.id][1]
         html_template = loader.get_template('email/participation_summary.html')
         html_message = html_template.render({
-                                                   'meets_attended': meets_attended,
-                                                   'meets_total': meets_total,
-                                                   'att_percent': att_percent,
-                                                   'tt_count': tt_count,
-                                                   'tt_percent': tt_percent,
-                                                   'speech_count': speech_count,
-                                                   'evaluation_count': evaluation_count,
-                                                   'big_three_count': big_three_count,
-                                                    'part_count': part_count,
-                                                   'part_percent': part_percent,
-                                                   'club': club.name,
-                                                   'member_name': str(mem.user.full_name)
-                                               })
+            'meets_attended': meets_attended,
+            'meets_total': meets_total,
+            'att_percent': att_percent,
+            'tt_count': tt_count,
+            'tt_percent': tt_percent,
+            'speech_count': speech_count,
+            'evaluation_count': evaluation_count,
+            'big_three_count': big_three_count,
+            'part_count': part_count,
+            'part_percent': part_percent,
+            'club': club.name,
+            'member_name': str(mem.user.full_name)
+        })
         try:
-            send_mail('Participation Summary of %s' %mem.user.full_name, 'Participation Summary of %s' %mem.user.full_name, 'smarttm@toastmasters.pk', [mem.user.email], fail_silently=True, html_message=html_message)
+            send_mail('Participation Summary of %s' % mem.user.full_name,
+                      'Participation Summary of %s' % mem.user.full_name, 'smarttm@toastmasters.pk', [mem.user.email],
+                      fail_silently=True, html_message=html_message)
+
+            mem.summary_sent_date = timezone.now()
+            mem.save()
         except:
             continue

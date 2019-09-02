@@ -141,6 +141,7 @@ class Member(models.Model):
     updated_by = models.ForeignKey(User, related_name='member_updated_by',on_delete=models.CASCADE, null = True, blank = True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True, blank=True)
     is_EC = models.BooleanField(default = False)
+    summary_sent_date = models.DateTimeField('Summary Sent Date', null = True, blank = True)
 
     def save(self, *args, **kwargs):
 
