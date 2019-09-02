@@ -220,3 +220,16 @@ class ToggleAttendance(APIView):
             return Response({
                 'status': 'failed'
             })
+
+
+class ParticipationObj(APIView):
+    def delete(self, request, participation_id):
+        try:
+            part = Participation.objects.get(pk=participation_id).delete()
+            return Response({
+                'status': 'success'
+            })
+        except:
+            return Response({
+                'status': 'failed'
+            })

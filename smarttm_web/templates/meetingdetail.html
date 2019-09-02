@@ -81,18 +81,20 @@
 									<th>Total Duration</th>
 									<th>AH Counts</th>
 									<th>Vote Counts</th>
+									<th>Action</th>
 
 								</tr>
 							</thead>
 							<tbody>
 								{% for part_Obj in speech_part %}
-									<tr>
+									<tr id="hide-row-{{ part_Obj.id }}">
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.member.user.full_name }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
 										<td>{{ part_Obj.time_seconds }}</td>
-										<td>{{ summ_Obj.ah_count }}</td>
-										<td>{{ summ_Obj.vote_count }}</td>
+										<td>{{ part_Obj.ah_count }}</td>
+										<td>{{ part_Obj.vote_count }}</td>
+										<td><a><i class="far fa-edit"></i></a>&nbsp&nbsp&nbsp<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -115,14 +117,16 @@
 									<td> # </td>
 									<th>Role Name</th>
 									<th>Performed By</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% for part_Obj in role_basic_part %}
-									<tr>
+									<tr id="hide-row-{{ part_Obj.id }}">
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
                                         <td>{{ part_Obj.member.user.full_name }}</td>
+										<td><a><i class="far fa-edit"></i></a>&nbsp&nbsp&nbsp<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
 										</tr>
 								{% endfor %}
 							</tbody>
@@ -141,14 +145,16 @@
 									<td> # </td>
 									<th>Role Name</th>
 									<th>Performed By</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% for part_Obj in role_advanced_part %}
-									<tr>
+									<tr  id="hide-row-{{ part_Obj.id }}">
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
                                         <td>{{ part_Obj.member.user.full_name }}</td>
+										<td><a><i class="far fa-edit"></i></a>&nbsp&nbsp&nbsp<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
 										</tr>
 								{% endfor %}
 							</tbody>
@@ -204,9 +210,42 @@
 
 		
 		<!-- Modal -->
-		
+
+		<!--Prompt Modal-->
+			<div class="modal" tabindex="-1" role="dialog" id="DeletePrompt">
+			  <div class="modal-dialog" role="document">
+				<div class="modal-content">
+				  <div class="modal-header">
+					<h5 class="modal-title">Delete Participation</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					  <span aria-hidden="true">&times;</span>
+					</button>
+				  </div>
+				  <div class="modal-body">
+					<p>Are you sure you want to delete this participation?</p>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" class="btn btn-danger" id="deleteButton">Delete</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		<!--	End Prompt Modal	-->
 		<script type="text/javascript">
-			
+			csrftoken = Cookies.get('csrftoken')
+
+			function csrfSafeMethod(method) {
+				// these HTTP methods do not require CSRF protection
+				return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+			}
+			$.ajaxSetup({
+					beforeSend: function(xhr, settings) {
+						if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+							xhr.setRequestHeader("X-CSRFToken", csrftoken);
+						}
+					}
+				});
 			function ToggleAttendance(AttendanceID){
 				console.log(AttendanceID)
 				 
@@ -231,6 +270,20 @@
 			})
 			}
 
+			function DeleteParticipation(ParticipationID){
+				$.ajax({
+				data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+				url: "/api/participation/"+ParticipationID+"/",
+				type: 'DELETE',
+				success: function(data){
+				if (data.status == 'success'){
+
+					$('#DeletePrompt').modal('hide');
+					document.getElementById("hide-row-"+ParticipationID).style.display = "none";
+				}
+				}
+			});
+			}
 
 			$(document).ready(function() {
 				$('#attendances').dataTable({
@@ -238,6 +291,15 @@
 
 				});
 			} );
+
+			$('#DeletePrompt').on('show.bs.modal', function (event) {
+				  let button = $(event.relatedTarget)
+				  let id = button.data('id') // Extract info from data-* attributes
+				  var modal = $(this)
+				  modal.find('#deleteButton').attr('onClick', 'DeleteParticipation('+id+')');
+				})
+
+
 		</script>
 
 {%endblock%}
