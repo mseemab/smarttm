@@ -50,7 +50,7 @@ def meeting(request, meeting_id):
 
     return render(request, 'meetingdetail.html', {'meeting': meeting, 'role_basic_part': role_basic_part,
                                                   'role_advanced_part': role_advanced_part, 'speech_part': speech_part,
-                                                  'attendance': attendance})
+                                                  'attendance': attendance, 'part_types': part_types})
 
 @login_required()
 def add_meeting(request):
@@ -118,6 +118,11 @@ def import_meeting_data(request):
 
             part_new = Participation(meeting_id = meeting_id, member = member[0], participation_type = part_type[0], club_id = club_key)
             new_parts.append(part_new)
+            att, created = Attendance.objects.update_or_create(member_id=member_id, meeting_id=meeting_id,
+                                                               defaults={
+                                                                   'present': True,
+                                                               }
+                                                               )
 
         Participation.objects.bulk_create(new_parts)
         messages.success(request,

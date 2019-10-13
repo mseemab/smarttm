@@ -233,3 +233,30 @@ class ParticipationObj(APIView):
             return Response({
                 'status': 'failed'
             })
+    def post(self, request, participation_id):
+        try:
+            pdb.set_trace()
+            part = Participation.objects.create(meeting_id = int(request.POST.get('meeting_id', 0)),
+                                                member_id = int(request.POST.get('member_id', 0)),
+                                                participation_type_id = int(request.POST.get('participation_type_id', 0)))
+            part.save()
+            return Response({
+                'status': 'success'
+            })
+        except:
+            return Response({
+                'status': 'failed'
+            })
+
+    def put(self, request, participation_id):
+        try:
+            part = Participation.objects.update_or_create(id=participation_id,
+                                                          defaults={'member_id':int(request.POST.get('member_id', 0)),
+                                                          'participation_type_id':int(request.POST.get('participation_type_id', 0))})
+            return Response({
+                'status': 'success'
+            })
+        except:
+            return Response({
+                'status': 'failed'
+            })

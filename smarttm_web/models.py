@@ -278,6 +278,11 @@ class Participation(models.Model):
         self.updated_by = get_username()
         self.created_date = timezone.now() if self.created_date is None else self.created_date
         self.updated_date = timezone.now()
+        att, created = Attendance.objects.update_or_create(member_id=self.member_id, meeting_id=self.meeting_id,
+                                                           defaults={
+                                                               'present': True,
+                                                           }
+                                                           )
 
         super(Participation, self).save(*args, **kwargs)
 

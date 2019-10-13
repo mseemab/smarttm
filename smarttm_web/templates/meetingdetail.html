@@ -13,9 +13,9 @@
 				</div>
 				<div class="col-sm" style="text-align:right;">
 					<h3>
-					<a href="{% url 'meeting_detail' meeting.pk %}"><button type="button" class="btn btn-outline-success" >
-					  <i class="fa fa-sync"></i> Refresh
-					</button></a>
+					<button type="button" class="btn btn-outline-primary btn-rounded" data-partid="0" data-memid="0" data-parttype="0" data-toggle="modal" data-target="#createUpdatePartModal">
+					  <i class="far fa-plus-square"></i> Add Participation
+					</button>
 
 					<button type="button" class="btn btn-outline-primary btn-rounded" data-toggle="modal" data-target="#ImportMeetingData">
 					  <i class="fa fa-file-excel"></i> Import Meeting Data
@@ -23,41 +23,7 @@
 					</h3>
 				</div>
 
-				<!-- Import Modal -->
-					<div class="modal fade" id="ImportMeetingData" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-								<form action="{% url 'import_meeting_data' %}" method="POST" enctype="multipart/form-data">
-									<div class="modal-header">
-										<h5 class="modal-title" id="exampleModalLabel">Import Meeting Data</h5>
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-										</button>
-									</div>
-									<div class="modal-body">
-										{% csrf_token %}
-										<div class="alert alert-info">
-										  <strong>Info!</strong> Make sure the import file is <u>.xlsx</u> file and according to the template.
-										</div>
-										<br>
 
-										<br>
-										<b>Select File :</b>
-										<input type="file" name="importfile" required class="form-data" />
-										<input type="hidden" name="meeting_id" required class="form-data" value = "{{meeting.pk}}">
-										<br><br>
-
-										<br>
-
-									</div>
-									<div class="modal-footer">
-										<button type="submit" class="btn btn-primary">Import Data</button>
-										<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
 			</div>
 
 			<hr />	
@@ -72,7 +38,7 @@
 					<br>
 					<div class="table-responsive">
 
-							<table  class="table table-bordered" >
+							<table  class="table table-bordered" id="participations">
 							<thead>
 								<tr>
 									<td> # </td>
@@ -94,7 +60,10 @@
 										<td>{{ part_Obj.time_seconds }}</td>
 										<td>{{ part_Obj.ah_count }}</td>
 										<td>{{ part_Obj.vote_count }}</td>
-										<td><a><i class="far fa-edit"></i></a>&nbsp&nbsp&nbsp<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
+										<td>
+											<a data-partid="{{ part_Obj.id }}" data-memid="{{ part_Obj.member.id }}" data-parttype="{{ part_Obj.participation_type.id }}" data-toggle="modal" data-target="#createUpdatePartModal"><i class="far fa-edit"></i></a>
+											&nbsp&nbsp&nbsp
+											<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -126,7 +95,10 @@
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
                                         <td>{{ part_Obj.member.user.full_name }}</td>
-										<td><a><i class="far fa-edit"></i></a>&nbsp&nbsp&nbsp<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
+										<td><a data-partid="{{ part_Obj.id }}" data-memid="{{ part_Obj.member.id }}" data-parttype="{{ part_Obj.participation_type.id }}" data-toggle="modal" data-target="#createUpdatePartModal"><i class="far fa-edit"></i></a>
+											&nbsp&nbsp&nbsp
+											<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a>
+										</td>
 										</tr>
 								{% endfor %}
 							</tbody>
@@ -154,7 +126,11 @@
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
                                         <td>{{ part_Obj.member.user.full_name }}</td>
-										<td><a><i class="far fa-edit"></i></a>&nbsp&nbsp&nbsp<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
+										<td>
+											<a data-partid="{{ part_Obj.id }}" data-memid="{{ part_Obj.member.id }}" data-parttype="{{ part_Obj.participation_type.id }}" data-toggle="modal" data-target="#createUpdatePartModal"><i class="far fa-edit"></i></a>
+											&nbsp&nbsp&nbsp
+											<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a>
+										</td>
 										</tr>
 								{% endfor %}
 							</tbody>
@@ -170,7 +146,7 @@
 				<div class="table-responsive">
 
 
-						<table  class="table table-bordered" id = "attendances" >
+						<table  class="display table table-bordered" id = "attendances" >
 							<thead>
 								<tr>
 									<th> # </th>
@@ -208,9 +184,85 @@
 			</div>
 		</div>
 
-		
-		<!-- Modal -->
+		<!-- Import Modal -->
+			<div class="modal fade" id="ImportMeetingData" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<form action="{% url 'import_meeting_data' %}" method="POST" enctype="multipart/form-data">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Import Meeting Data</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								{% csrf_token %}
+								<div class="alert alert-info">
+								  <strong>Info!</strong> Make sure the import file is <u>.xlsx</u> file and according to the template.
+								</div>
+								<br>
 
+								<br>
+								<b>Select File :</b>
+								<input type="file" name="importfile" required class="form-data" />
+								<input type="hidden" name="meeting_id" required class="form-data" value = "{{meeting.pk}}">
+								<br><br>
+
+								<br>
+
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary">Import Data</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+		<!-- Create/ Update Participation Modal -->
+			<div class="modal fade" id="createUpdatePartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<form id="updateCreateForm">
+							<div class="modal-header">
+								<h5 class="modal-title" id="cRModalLabel">Create/ Update Participation</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+
+								<br>
+								<label>Select Member :</label>
+								<select class="form-control" id="memberSelect" name="mem_id">
+									<option disabled selected value="0"> -- select a member -- </option>
+									{% for att_record in attendance %}
+										<option value="{{ att_record.member.id }}">{{ att_record.member.user.full_name }}</option>
+									{% endfor %}
+								</select>
+								<br>
+								<label>Select Participation Type :</label>
+								<select class="form-control" id="participationSelect" name="part_type_id">
+									<option disabled selected value="0"> -- select a participation type -- </option>
+									{% for part_type in part_types %}
+										<option value="{{ part_type.id }}">{{ part_type.name }}</option>
+									{% endfor %}
+								</select>
+								<input type="hidden" name="meeting_id" required class="form-data" value = "{{meeting.pk}}">
+								<input type="hidden" name="participation_id" class="form-data" value = '0'>
+
+								<br>
+
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-primary">Save</button>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 		<!--Prompt Modal-->
 			<div class="modal" tabindex="-1" role="dialog" id="DeletePrompt">
 			  <div class="modal-dialog" role="document">
@@ -246,6 +298,8 @@
 						}
 					}
 				});
+
+
 			function ToggleAttendance(AttendanceID){
 				console.log(AttendanceID)
 				 
@@ -270,6 +324,46 @@
 			})
 			}
 
+			$('#updateCreateForm').on('submit', function(e) {
+				e.preventDefault();
+				var part_id = $("input[name=participation_id]").val();
+				var method = 'PUT';
+				if (part_id == '0'){
+					method = 'POST';
+				}
+				$.ajax({
+				data: {csrfmiddlewaretoken: '{{ csrf_token }}',
+				 		participation_type_id: $("#participationSelect").val(),
+				 		meeting_id: $("input[name=meeting_id]").val(),
+				 		member_id: $("#memberSelect").val()},
+				url: "/api/participation/"+part_id+"/",
+				type: method,
+				success: function(data){
+				if (data.status == 'success'){
+
+					$('#createUpdatePartModal').modal('hide');
+					location.reload()
+<!--					document.getElementById("hide-row-"+ParticipationID).style.display = "none";-->
+				}
+				}
+			});
+				console.log(method)
+
+			})
+
+
+			$('#createUpdatePartModal').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget)
+				var part_id = button.data('partid')
+				let modal = $(this);
+				modal.find("input[name=participation_id]").attr('value', part_id);
+					let mem_id = button.data('memid')
+					let part_type = button.data('parttype');
+					modal.find('#participationSelect');
+					modal.find('#participationSelect').val(part_type);
+					modal.find('#memberSelect').val(mem_id);
+			})
+
 			function DeleteParticipation(ParticipationID){
 				$.ajax({
 				data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
@@ -285,11 +379,13 @@
 			});
 			}
 
+
 			$(document).ready(function() {
 				$('#attendances').dataTable({
 					"bPaginate": false,
 
 				});
+				
 			} );
 
 			$('#DeletePrompt').on('show.bs.modal', function (event) {
@@ -298,6 +394,12 @@
 				  var modal = $(this)
 				  modal.find('#deleteButton').attr('onClick', 'DeleteParticipation('+id+')');
 				})
+
+			$('#createUpdatePartModal').on('hide.bs.modal', function (event) {
+				$('#updateCreateForm select').each(function() {
+					$(this).val($(this).find("option:first").val());
+				});
+			});
 
 
 		</script>
