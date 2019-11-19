@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+from smarttm import store
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '92cr79yilaogsoehdd4cl(znn0v*wbb!xvme6&g_gw&ivu&d$s'
+SECRET_KEY = store.SECRET_KEY
 
 #AUTH_USER_MODEL
 
@@ -92,15 +92,7 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smarttm_db',
-        'HOST': 'smarttmdb.connduddqrym.us-east-2.rds.amazonaws.com',
-        'USER': 's00470150',
-        'PASSWORD': 'Huawei123',
-    }
-}
+DATABASES = store.DATABASES
 
 
 
@@ -148,10 +140,10 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
-AWS_LOCATION = 'static'
-AWS_ACCESS_KEY_ID ='AKIAJHWKWBVGIQT5A5BQ'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME ='smarttm-static'
+AWS_LOCATION = store.AWS_LOCATION
+AWS_ACCESS_KEY_ID =store.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = store.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME =store.AWS_STORAGE_BUCKET_NAME
 AWS_S3_CUSTOM_DOMAIN='%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
      'CacheControl': 'max-age=86400',
@@ -168,8 +160,8 @@ STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystem
 AWS_DEFAULT_ACL = None
 
 #email settings
-EMAIL_HOST = 'mail.viperd.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'smarttm@toastmasters.pk'
-EMAIL_HOST_PASSWORD = 'K3ratOma-o'
+EMAIL_HOST = store.EMAIL_HOST
+EMAIL_PORT = store.EMAIL_PORT
+EMAIL_HOST_USER = store.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = store.EMAIL_HOST_PASSWORD
 EMAIL_USE_TLS = True
