@@ -49,13 +49,17 @@
 			<div class="row">
 				  
 				<div class="col-sm" >
+					<div class="custom-control custom-switch">
+					  <input type="checkbox" class="custom-control-input" id="toggleUnpaidMembers">
+					  <label class="custom-control-label" for="toggleUnpaidMembers">Show unpaid members</label>
+					</div>
 					<div class="table-wrapper">
 						<div class="table-title table-responsive">
 							<table  id="example"  class="display table table-bordered " >
 							<thead>
 								<tr>
-									<th>#</th>
 									<th>Name</th>
+									<th style="display: none">Paid Status</th>
 									<th>Present</th>
 									<th>Latest Absents</th>
 									<th>Meetings Participation</th>
@@ -70,8 +74,8 @@
 							<tbody>
 								{% for summ_Obj in summ_set %}
 									<tr>
-										<td>{{ forloop.counter }}</td>
 										<td>{{ summ_Obj.member.user.full_name }}</td>
+										<td style="display: none">{% if summ_Obj.member.paid_status %}Paid{% else %}Unpaid{% endif %}</td>
 										<td>{{ summ_Obj.attendance_percent }} %</td>
 										<td>{{ summ_Obj.last_absents }}</td>
 										<td>{{ summ_Obj.part_percent }} %</td>
@@ -171,9 +175,30 @@
 
 
 	<script type="text/javascript">
+		$.fn.dataTable.ext.search.push(
+		function( settings, data, dataIndex ) {
+			let showUnpaidMembers = $("#toggleUnpaidMembers").prop("checked")
+			let paidStatus = data[1] // use data for the age column
 
+			if (showUnpaidMembers)
+			{
+				return true;
+			}
+			else
+			{
+				if (paidStatus=="Paid"){
+					return true
+				}
+				else
+				{
+					return false
+				}
+			}
+
+		}
+	);
 		$(document).ready(function() {
-			$('#example').DataTable({
+			let table = $('#example').DataTable({
 				fixedHeader: true,
 				'bPaginate': false,
 				dom: 'Bfrtip',
@@ -184,9 +209,11 @@
 					className: 'btn btn-outline-primary btn-rounded'
 				}
 				]
-
-
 			});
+			$("#toggleUnpaidMembers").change(function() {
+			console.log("checked and unchecked")
+				table.draw()
+			})
 		} );
 	</script>
 
