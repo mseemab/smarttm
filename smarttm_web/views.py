@@ -187,7 +187,7 @@ def summary(request):
 
 def club_ranking(request, club_id):
     club_obj = Club.objects.get(pk=club_id)
-    club_members = club_obj.members.filter(active=True)
+    club_members = club_obj.members.filter(active=True, paid_status=True)
     FromDate = ""
     ToDate = ""
     if request.method == 'POST':
