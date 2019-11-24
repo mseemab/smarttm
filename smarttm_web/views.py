@@ -214,7 +214,8 @@ def summary(request):
         participation_count = Participation.get_participation_count(club_member_ids)
         part_percent_dict = {}
         for part_count in participation_count:
-            part_percent_dict[part_count.id] = math.ceil((part_count.TotalParticipations/part_count.TotalAttendance)*100) if part_count.TotalAttendance != 0 else 0
+            part_percent_dict[part_count.id] = math.ceil((part_count.TotalParticipations/part_count.TotalAttendance)*100) \
+                if part_count.TotalAttendance != 0 else 0
         for club_mem in club_members:
             sum_obj = Summary()
             sum_obj.member = club_mem
@@ -252,9 +253,19 @@ def summary(request):
                 sum_obj.adv_role_count = sum_obj.adv_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
             for part_type in category_basic:
                 sum_obj.basic_role_count = sum_obj.basic_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
-            
+
             summ.append(sum_obj)
 
+        #add rankings
+        for i in range(len(summ)-1, 0 , -1):
+            for j in range(i):
+                if (summ[j].part_percent < summ[j+1].part_percent) or ((summ[j].part_percent == summ[j+1].part_percent) and (summ[j].attendance_percent > summ[j+1].attendance_percent)):
+                    temp = summ[j]
+                    summ[j] = summ[j+1]
+                    summ[j+1] = temp
+
+        for i in range(len(summ)):
+            summ[i].ranking = i+1
         return render(request, 'rankings.html' , { 'page_title':'User Rankings for '+ club_obj.name , 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
     else:
         response = redirect('LoginUser')

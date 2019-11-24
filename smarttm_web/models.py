@@ -330,6 +330,7 @@ class Summary(models.Model):
     last_absents = models.IntegerField(default = 0)
     tt_percent = models.IntegerField(default = 0)
     part_percent = models.IntegerField(default = 0)
+    ranking = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
 

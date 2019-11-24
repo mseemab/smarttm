@@ -58,6 +58,7 @@
 							<table  id="example"  class="display table table-bordered " >
 							<thead>
 								<tr>
+									<th>Ranking</th>
 									<th>Name</th>
 									<th style="display: none">Paid Status</th>
 									<th>Present</th>
@@ -74,6 +75,7 @@
 							<tbody>
 								{% for summ_Obj in summ_set %}
 									<tr>
+										<td>{{ summ_Obj.ranking }}</td>
 										<td>{{ summ_Obj.member.user.full_name }}</td>
 										<td style="display: none">{% if summ_Obj.member.paid_status %}Paid{% else %}Unpaid{% endif %}</td>
 										<td>{{ summ_Obj.attendance_percent }} %</td>
@@ -178,7 +180,7 @@
 		$.fn.dataTable.ext.search.push(
 		function( settings, data, dataIndex ) {
 			let showUnpaidMembers = $("#toggleUnpaidMembers").prop("checked")
-			let paidStatus = data[1] // use data for the age column
+			let paidStatus = data[2] // use data for the age column
 
 			if (showUnpaidMembers)
 			{
