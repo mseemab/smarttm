@@ -152,7 +152,7 @@
 						<table  class="display table table-bordered" id = "attendances" >
 							<thead>
 								<tr>
-									<th> # </th>
+									<th> ID </th>
 
 									<th>Member Name</th>
 									<th style="display: none">Paid Status</th>
@@ -163,7 +163,7 @@
 							<tbody>
 								{% for att_record in attendance %}
 									<tr>
-										<td>{{ forloop.counter }}</td>
+										<td>{{ att_record.member.id }}</td>
                                         <td>{{ att_record.member.user.full_name }}</td>
 										<td style="display: none">{% if att_record.member.paid_status %}Paid{% else %}Unpaid{% endif %}</td>
 										<td id = "attendance-{{ att_record.pk }}">
