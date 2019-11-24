@@ -235,7 +235,6 @@ class ParticipationObj(APIView):
             })
     def post(self, request, participation_id):
         try:
-            pdb.set_trace()
             part = Participation.objects.create(meeting_id = int(request.POST.get('meeting_id', 0)),
                                                 member_id = int(request.POST.get('member_id', 0)),
                                                 participation_type_id = int(request.POST.get('participation_type_id', 0)))
