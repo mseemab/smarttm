@@ -12,6 +12,7 @@
 				<div class="col-sm" style="padding-top: 6px" >
 					<h3>Participation Rankings</h3>
 				</div>
+				{% if user.is_authenticated %}
 				<div class="col-sm" >
 
 					<form action="" method="POST" class="form-inline" style="float:right;">
@@ -28,6 +29,7 @@
 
 					</form>
 				</div>
+				{% endif %}
 
 			<br>
 			<br>
@@ -35,6 +37,7 @@
 			</div>
 			<hr />
 			<br>
+			{% if user.is_authenticated %}
 			<div class="row">
 			<div class="col-sm" >
 						
@@ -45,6 +48,10 @@
 						{% endif %}
 
 			</div>
+			</div>
+			{% endif %}
+			<div class="row">
+				<div id="container2" style="width: 100%; height: 500px; margin: 0 auto"></div>
 			</div>
 			<div class="row">
 				  
@@ -218,7 +225,71 @@
 			})
 		} );
 	</script>
+	<script>
+		Highcharts.chart('container2', {
+			chart: {
+				type: 'column'
+			},
+			title: {
+				text: ''
+			},
+			xAxis: {
+				categories: [
+				{% for summ_Obj in summ_set %}
+					{% if summ_Obj.member.paid_status %}
+					"{{ summ_Obj.member.user.full_name }}",
+					{% endif %}
+				{% endfor %}
 
+				],
+				crosshair: true
+			},
+			yAxis: {
+				min: 0,
+				max: 100,
+				title: {
+					text: 'Percentage'
+				}
+			},
+			tooltip: {
+				headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+				pointFormatter: function (){
+				return '<tr><td style="color:'+this.color+';padding:0">Rank: </td>' +
+					'<td style="padding:0"><b>'+ parseInt(this.index+1).toString() +'</b></td></tr>'},
+				footerFormat: '</table>',
+				shared: true,
+				useHTML: true,
+
+			},
+			plotOptions: {
+				column: {
+
+					pointPadding: 0.2,
+					borderWidth: 0
+				},
+				series: {
+
+            borderWidth: 0,
+            dataLabels: {
+                enabled: true,
+                format: '{point.y}'
+            }
+        }
+			},
+			series: [{
+				name: 'Participation Percentage',
+				color: '#007BFF',
+				data: [
+				{% for summ_Obj in summ_set %}
+					{% if summ_Obj.member.paid_status %}
+					{{ summ_Obj.part_percent }},
+					{% endif %}
+				{% endfor %}
+				]
+
+			}]
+		});
+		</script>
 
 	<style>
 

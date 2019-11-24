@@ -7,6 +7,7 @@ urlpatterns = [
    path('', views.index, name = 'index'),
    path('summary/', views.summary, name = 'ranking_summary'),
    path('club/members/', views.club_management, name = 'manage_club'),
+   path('clubs/<int:club_id>/ranking/', views.club_ranking, name = 'club_rankings'),
    path('accounts/login/', views.login_user, name = 'LoginUser'),
    path('accounts/register/', views.register , name = 'register'),
    path('meetings/', meeting_views.meetings_view, name = 'meeting_summary'),

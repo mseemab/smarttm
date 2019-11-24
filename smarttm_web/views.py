@@ -181,95 +181,98 @@ def ImportMembers(request):
 
 @login_required()
 def summary(request):
-    
-    if request.user.is_authenticated:
-        club_key = request.session['SelectedClub'][0]
-        club_obj = Club.objects.get(pk=club_key)
-            
-        club_members = club_obj.members.filter(active=True)
-        
-        FromDate = ""
-        ToDate = ""
-        if request.method == 'POST':
-             
-            FromDate = request.POST.get("StartDate", "")
-            ToDate = request.POST.get("EndDate", "")
-            
-            partication_set = club_obj.participation_set.filter(created_date__range=(FromDate, ToDate))
-        else:
-            partication_set = club_obj.participation_set.filter()
-            
-        partication_types = Participation_Type.objects.all()
-        category_adv = partication_types.filter(category = 'Role-Advanced')
-        category_basic = partication_types.filter(category = 'Role-Basic')
-        summ = []
-
-        club_member_ids = [member.pk for member in club_members]
-        latest_absents = Attendance.get_latest_absents(club_member_ids)
-
-        latest_absents_dict = {}
-        for absent in latest_absents:
-            latest_absents_dict[absent.member_id] = absent.count_absents
-
-        participation_count = Participation.get_participation_count(club_member_ids)
-        part_percent_dict = {}
-        for part_count in participation_count:
-            part_percent_dict[part_count.id] = math.ceil((part_count.TotalParticipations/part_count.TotalAttendance)*100) \
-                if part_count.TotalAttendance != 0 else 0
-        for club_mem in club_members:
-            sum_obj = Summary()
-            sum_obj.member = club_mem
-            tt_count = partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Table Topic')).count()
-            sum_obj.tt_count = tt_count
-            sum_obj.speeches_count = partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Prepared Speech')).count()
-            sum_obj.evaluation_count =partication_set.filter(member = club_mem, participation_type = partication_types.get(name='Evaluation')).count()
-            if request.method == "POST":
-                presents = Attendance.objects.filter(member = club_mem, present = True, created_date__range=(FromDate, ToDate)).count()
-                absents = Attendance.objects.filter(member=club_mem, present=False, created_date__range=(FromDate, ToDate)).count()
-            else:
-                presents = Attendance.objects.filter(member=club_mem, present=True).count()
-                absents = Attendance.objects.filter(member=club_mem, present=False).count()
-
-            sum_obj.attendance_percent = math.ceil((presents/(presents+absents))*100) if presents+absents != 0 else 0
-            sum_obj.tt_percent = math.ceil((tt_count/presents)*100) if presents != 0 else 0
-
-            try:
-                sum_obj.last_absents = latest_absents_dict[club_mem.id]
-            except:
-                sum_obj.last_absents = 0
-            try:
-                sum_obj.part_percent = part_percent_dict[club_mem.id]
-            except:
-                sum_obj.sum_obj.part_percent = 0
-
-            # mem_att = Attendance.objects.filter(member = club_mem).order_by('-meeting')[:2]
-            # if mem_att.filter(present = False).count() == mem_att.all().count():
-            #     sum_obj.last_two_meetings_att = False
-            # else:
-            #     sum_obj.last_two_meetings_att = True
+    club_id = request.session['SelectedClub'][0]
+    return club_ranking(request, club_id)
 
 
-            for part_type in category_adv:
-                sum_obj.adv_role_count = sum_obj.adv_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
-            for part_type in category_basic:
-                sum_obj.basic_role_count = sum_obj.basic_role_count+partication_set.filter(member = club_mem, participation_type = part_type).count()
+def club_ranking(request, club_id):
+    club_obj = Club.objects.get(pk=club_id)
+    club_members = club_obj.members.filter(active=True)
+    FromDate = ""
+    ToDate = ""
+    if request.method == 'POST':
 
-            summ.append(sum_obj)
+        FromDate = request.POST.get("StartDate", "")
+        ToDate = request.POST.get("EndDate", "")
 
-        #add rankings
-        for i in range(len(summ)-1, 0 , -1):
-            for j in range(i):
-                if (summ[j].part_percent < summ[j+1].part_percent) or ((summ[j].part_percent == summ[j+1].part_percent) and (summ[j].attendance_percent > summ[j+1].attendance_percent)):
-                    temp = summ[j]
-                    summ[j] = summ[j+1]
-                    summ[j+1] = temp
-
-        for i in range(len(summ)):
-            summ[i].ranking = i+1
-        return render(request, 'rankings.html' , { 'page_title':'User Rankings for '+ club_obj.name , 'summ_set' : summ, 'FromDate': FromDate, 'ToDate':ToDate})
+        partication_set = club_obj.participation_set.filter(created_date__range=(FromDate, ToDate))
     else:
-        response = redirect('LoginUser')
-        return response
+        partication_set = club_obj.participation_set.filter()
+
+    partication_types = Participation_Type.objects.all()
+    category_adv = partication_types.filter(category='Role-Advanced')
+    category_basic = partication_types.filter(category='Role-Basic')
+    summ = []
+
+    club_member_ids = [member.pk for member in club_members]
+    latest_absents = Attendance.get_latest_absents(club_member_ids)
+
+    latest_absents_dict = {}
+    for absent in latest_absents:
+        latest_absents_dict[absent.member_id] = absent.count_absents
+
+    participation_count = Participation.get_participation_count(club_member_ids)
+    part_percent_dict = {}
+    for part_count in participation_count:
+        part_percent_dict[part_count.id] = math.ceil(
+            (part_count.TotalParticipations / part_count.TotalAttendance) * 100) \
+            if part_count.TotalAttendance != 0 else 0
+    for club_mem in club_members:
+        sum_obj = Summary()
+        sum_obj.member = club_mem
+        tt_count = partication_set.filter(member=club_mem,
+                                          participation_type=partication_types.get(name='Table Topic')).count()
+        sum_obj.tt_count = tt_count
+        sum_obj.speeches_count = partication_set.filter(member=club_mem, participation_type=partication_types.get(
+            name='Prepared Speech')).count()
+        sum_obj.evaluation_count = partication_set.filter(member=club_mem, participation_type=partication_types.get(
+            name='Evaluation')).count()
+        if request.method == "POST":
+            presents = Attendance.objects.filter(member=club_mem, present=True,
+                                                 created_date__range=(FromDate, ToDate)).count()
+            absents = Attendance.objects.filter(member=club_mem, present=False,
+                                                created_date__range=(FromDate, ToDate)).count()
+        else:
+            presents = Attendance.objects.filter(member=club_mem, present=True).count()
+            absents = Attendance.objects.filter(member=club_mem, present=False).count()
+
+        sum_obj.attendance_percent = math.ceil(
+            (presents / (presents + absents)) * 100) if presents + absents != 0 else 0
+        sum_obj.tt_percent = math.ceil((tt_count / presents) * 100) if presents != 0 else 0
+
+        try:
+            sum_obj.last_absents = latest_absents_dict[club_mem.id]
+        except:
+            sum_obj.last_absents = 0
+        try:
+            sum_obj.part_percent = part_percent_dict[club_mem.id]
+        except:
+            sum_obj.sum_obj.part_percent = 0
+        for part_type in category_adv:
+            sum_obj.adv_role_count = sum_obj.adv_role_count + partication_set.filter(member=club_mem,
+                                                                                     participation_type=part_type).count()
+        for part_type in category_basic:
+            sum_obj.basic_role_count = sum_obj.basic_role_count + partication_set.filter(member=club_mem,
+                                                                                         participation_type=part_type).count()
+
+        summ.append(sum_obj)
+
+    # add rankings
+    for i in range(len(summ) - 1, 0, -1):
+        for j in range(i):
+            if (summ[j].part_percent < summ[j + 1].part_percent) or (
+                    (summ[j].part_percent == summ[j + 1].part_percent) and (
+                    summ[j].attendance_percent > summ[j + 1].attendance_percent)):
+                temp = summ[j]
+                summ[j] = summ[j + 1]
+                summ[j + 1] = temp
+
+    for i in range(len(summ)):
+        summ[i].ranking = i + 1
+
+    return render(request, 'rankings.html', {'page_title': 'User Rankings for ' + club_obj.name, 'summ_set': summ,
+                                             'FromDate': request.POST.get("StartDate", ""),
+                                             'ToDate': request.POST.get("EndDate", "")})
 
 
 @login_required()
