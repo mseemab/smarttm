@@ -11,7 +11,6 @@
         <li class="nav-item {% if request.resolver_match.url_name == 'ranking_summary' %}active{% endif %}" ><a href="{% url 'ranking_summary' %}" class="nav-link">Rankings</a></li>
         <li class="nav-item {% if request.resolver_match.url_name == 'meeting_summary' %}active{% endif %}"><a  class="nav-link" href="{% url 'meeting_summary' %}">Meetings</a></li>
         <li class="nav-item {% if request.resolver_match.url_name == 'manage_club' %}active{% endif %}"><a  class="nav-link"  href="{% url 'manage_club' %}">Club Management </a></li>
-        <li class="nav-item {% if request.resolver_match.url_name == 'my_space' %}active{% endif %}" style="display: none"><a href="{% url 'my_space' %}" class="nav-link">My Space</a></li>
     </ul>
     <ul class="navbar-nav my-2 my-lg-0">
     <li class="nav-item dropdown">

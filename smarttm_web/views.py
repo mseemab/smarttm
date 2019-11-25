@@ -276,35 +276,50 @@ def club_ranking(request, club_id):
 
 
 @login_required()
-def my_space(request):
-    if request.user.is_authenticated:
-
+def member_detail(request, club_id, member_id):
         # Roles Performed Count
+        parts = Participation.objects.filter(member_id=member_id)
+        part_types = Participation_Type.objects.all()
+        cat_adv = part_types.filter(category='Role-Advanced')
+        cat_adv_ids = [cat.id for cat in cat_adv]
+        tt=part_types.get(name="Table Topic")
+        eval=part_types.get(name="Evaluation")
+        prep_speech = part_types.get(name="Prepared Speech")
+        prep_speech_count = parts.filter(participation_type_id=prep_speech.id).count()
+        tt_speech_count = parts.filter(participation_type_id=tt.id).count()
+        eval_speech_count = parts.filter(participation_type_id=eval.id).count()
+        adv_roles_count = parts.filter(participation_type_id__in=cat_adv_ids).count()
+        present_count = Attendance.objects.filter(member_id=member_id, present=True).count()
+        parts_count = parts.count()
+        meeting_part_count = parts.values('meeting_id').distinct().count()
+        member_name = Member.objects.get(id=member_id).user.full_name
+        #
+        # prepared_speech_parti = particiation_types.get(name = 'Prepared Speech')
+        # tt_speech_parti = particiation_types.get(name='Table Topic')
+        # eval_speech_parti = particiation_types.get(name='Evaluation')
+        #
+        #
+        # user_participations = Participation.objects.filter(member__in = memberships)
+        #
+        # roles_performed_count = user_participations.filter(member__in = memberships, participation_type__in = role_type).values('participation_type').distinct().count()
+        #
+        # ah_count_avg = user_participations.aggregate(Avg('ah_count'))['ah_count__avg'] if user_participations.aggregate(Avg('ah_count'))['ah_count__avg'] is not None else 0
+        #
+        # prepared_speech_count = user_participations.filter(member__in=memberships, participation_type =prepared_speech_parti).count()
+        # tt_speech_count = user_participations.filter(member__in=memberships, participation_type=tt_speech_parti).count()
+        # eval_speech_count = user_participations.filter(member__in=memberships, participation_type=eval_speech_parti).count()
 
-        particiation_types = Participation_Type.objects.all()
+        return render(request, 'memberdetail.html', {'adv_roles_count': adv_roles_count,
+                                                'prepared_speech_count':prep_speech_count,
+                                                'tt_speech_count':tt_speech_count,
+                                                'eval_speech_count':eval_speech_count,
+                                                'present_count': present_count,
+                                                'parts_count': parts_count,
+                                                'meeting_part_count': meeting_part_count,
+                                                'parts': parts,
+                                                'member_name': member_name
+                                                } )
 
-        role_type = particiation_types.filter(category__icontains = 'Role')
-
-        prepared_speech_parti = particiation_types.get(name = 'Prepared Speech')
-        tt_speech_parti = particiation_types.get(name='Table Topic')
-        eval_speech_parti = particiation_types.get(name='Evaluation')
-
-        memberships = list(Member.objects.filter(user = request.user))
-
-        user_participations = Participation.objects.filter(member__in = memberships)
-
-        roles_performed_count = user_participations.filter(member__in = memberships, participation_type__in = role_type).values('participation_type').distinct().count()
-
-        ah_count_avg = user_participations.aggregate(Avg('ah_count'))['ah_count__avg'] if user_participations.aggregate(Avg('ah_count'))['ah_count__avg'] is not None else 0
-
-        prepared_speech_count = user_participations.filter(member__in=memberships, participation_type =prepared_speech_parti).count()
-        tt_speech_count = user_participations.filter(member__in=memberships, participation_type=tt_speech_parti).count()
-        eval_speech_count = user_participations.filter(member__in=memberships, participation_type=eval_speech_parti).count()
-
-        return render(request, 'myspace.html', {'Roles_Performed': roles_performed_count, 'prepared_speech_count':prepared_speech_count, 'tt_speech_count':tt_speech_count, 'ah_count_avg': ah_count_avg, 'eval_speech_count':eval_speech_count } )
-    else:
-        response = redirect('LoginUser')
-        return response
 
 @login_required()
 def club_management(request):
