@@ -51,9 +51,12 @@
 			</div>
 			{% endif %}
 			<div class="row">
+				<div class="container-fluid">
+					<a href="#detail_table" class="btn btn-outline-primary btn-rounded">View Detail</a>
+				</div>
 				<div id="container2" style="width: 100%; height: 500px; margin: 0 auto"></div>
 			</div>
-			<div class="row">
+			<div class="row" id="detail_table">
 				  
 				<div class="col-sm" >
 					<div class="custom-control custom-switch" style="display: none">
@@ -83,7 +86,8 @@
 								{% for summ_Obj in summ_set %}
 									<tr>
 										<td>{{ summ_Obj.ranking }}</td>
-										<td>{{ summ_Obj.member.user.full_name }}</td>
+										<td><a href = "{% url 'member_detail' member_id=summ_Obj.member.pk club_id=summ_Obj.member.club_id %}">
+											{{ summ_Obj.member.user.full_name }}</a></td>
 										<td style="display: none">{% if summ_Obj.member.paid_status %}Paid{% else %}Unpaid{% endif %}</td>
 										<td>{{ summ_Obj.attendance_percent }} %</td>
 										<td>{{ summ_Obj.last_absents }}</td>
@@ -228,6 +232,16 @@
 
 <!--	#highcharts-->
 	<script>
+	var members = {
+	{% for summ_Obj in summ_set %}
+	{{ forloop.counter }}:{
+					{% if summ_Obj.member.paid_status %}
+					club_id: {{ summ_Obj.member.club.pk }},
+					member_name: "{{ summ_Obj.member.user.full_name }}",
+					member_id: {{ summ_Obj.member.pk }}
+					},
+					{% endif %}
+				{% endfor %}}
 		Highcharts.chart('container2', {
 			chart: {
 				type: 'column'
@@ -244,7 +258,10 @@
 				{% endfor %}
 
 				],
-				crosshair: true
+				crosshair: true,
+				labels : {
+						rotation: -45
+							}
 			},
 			yAxis: {
 				min: 0,
@@ -270,11 +287,25 @@
 					borderWidth: 0
 				},
 				series: {
-
+						point: {
+							events: {
+								click: function(){
+								debugger
+									let url = "{% url 'member_detail' 123 456 %}"
+									url = url.replace('123', members[this.index+1]['club_id'])
+									url = url.replace('456', members[this.index+1]['member_id'])
+									window.location.href = url
+									}
+									}
+									},
             borderWidth: 0,
             dataLabels: {
                 enabled: true,
-                format: '{point.y}'
+                format: '{point.y} %',
+                rotation: -90,
+                align: 'right',
+                y: 10,
+                color: '#FFFFFF',
             }
         }
 			},

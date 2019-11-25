@@ -275,7 +275,7 @@ def club_ranking(request, club_id):
                                              'ToDate': request.POST.get("EndDate", "")})
 
 
-@login_required()
+
 def member_detail(request, club_id, member_id):
         # Roles Performed Count
         parts = Participation.objects.filter(member_id=member_id)

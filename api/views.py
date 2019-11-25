@@ -157,7 +157,7 @@ class ParticipationListRoles(APIView):
 
 #OPTIMIZED
 class CatBasedParticipations(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated,)
 
 
     def get_roles(self, cat):
