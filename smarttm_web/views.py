@@ -99,83 +99,16 @@ def set_club(request, club_id):
 
 
 @login_required()
-def ImportMembers(request):
-   
+def import_members(request, club_id):
+    
+    club_obj = Club.objects.get(pk=club_key)
     if request.method == 'POST':
         myfile = request.FILES['importfile']
-        
         try:
-            df = pd.read_csv(myfile)
-            df = df.fillna(0)
-        except Exception as e:
-            messages.warning(request, 'Sheet Club Members not found in import file.') 
-            return redirect('ManageClub')
-
-
-        temp_columns = ["Customer ID", "Name", "Company / In Care Of", "Addr L1", "Addr L2", "Addr L3", "Addr L4", "Addr L5", "Country", "Member has opted-out of Toastmasters WHQ marketing mail", "Email", "Secondary Email", "Member has opted-out of Toastmasters WHQ marketing emails", "Home Phone", "Mobile Phone", "Additional Phone", "Member has opted-out of Toastmasters WHQ marketing phone calls", "Paid Until", "Member of Club Since", "Original Join Date", "status (*)", "Current Position", "Future Position", "Pathways Enrolled"]
-        req_cols = {"Customer ID":True, "Name":True, "Company / In Care Of":False, "Addr L1":True, "Addr L2":False, "Addr L3":False, "Addr L4":False, "Addr L5":False, "Country":True, "Member has opted-out of Toastmasters WHQ marketing mail":False, "Email":True, "Secondary Email":False, "Member has opted-out of Toastmasters WHQ marketing emails":False, "Home Phone":False, "Mobile Phone":False, "Additional Phone":False, "Member has opted-out of Toastmasters WHQ marketing phone calls":False, "Paid Until":True, "Member of Club Since":False, "Original Join Date":False, "status (*)":True, "Current Position":False, "Future Position":False, "Pathways Enrolled":False}
-        
-        header = df.columns.tolist()
-        if header == temp_columns:
-            for key, value in req_cols.items():
-                if value:
-                    if df[key].isnull().values.any():
-                        messages.warning(request, key + " values contain empty cell(s)!")
-                        return redirect('ManageClub')
-                
-            # Data is valid. 
-            user_list = []
-            member_list = []
-
-            club_key = request.session['SelectedClub'][0]
-            club_obj = Club.objects.get(pk=club_key)
-
-            club_members = list(Member.objects.filter(club=club_obj, active = True))
-
-
-            for index, row in df.iterrows():
-
-                #check if user exists already
-                user_obj, created = User.objects.update_or_create(
-                    email = row['Email'],
-                    defaults = {'full_name':row['Name'],
-                                "address" : row['Addr L1'],
-                                "country" : row['Country'],
-                                "home_phone" : row['Home Phone'],
-                                "mobile_phone" : row['Mobile Phone'],
-                                "address" : row['Addr L1'] + ' ' + row['Addr L1'] + ' ' + row['Addr L5'],
-                                #"paid_until" : row['Paid Until'],
-                                "toastmaster_id" : row['Customer ID']
-                            }
-
-                )
-
-                paid_status = True if row['status (*)'] == 'paid' else False
-                active = True
-                is_ec = False if row['Current Position'] is None or row['Current Position'] == 0 else True
-
-                user_list.append(user_obj)
-                member_obj, created = Member.objects.update_or_create(
-                    club = club_obj, user = user_obj,
-                    defaults={'paid_status' : paid_status,
-                              'is_EC': is_ec,
-                              'active': active}
-                )
-
-                member_list.append(member_obj)
-
-            club_member_ids = [member.pk for member in club_members]
-            new_member_ids = [member.pk for member in member_list]
-            unpaid_member_ids = tuple(set(club_member_ids) - set(new_member_ids))
-            Member.objects.filter(id__in = unpaid_member_ids).update(paid_status = False, is_EC = False, active = False)
-
+            club_obj.import_members(file)
             messages.success(request, 'Members imported.')
-
-            return redirect('manage_club')
-            
-        else:
-            messages.warning(request, 'Input Sheet does not follow template guidelines.') 
-            return redirect('manage_club')
+        except Exception as e:
+            messages.warning(request, repr(e)) 
         
     return redirect('manage_club')
 

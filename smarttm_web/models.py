@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.utils import timezone
 from smarttm_web.middleware import get_username
+import pandas as pd
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -104,6 +105,63 @@ class Club(models.Model):
         self.updated_date = timezone.now()
 
         super(Club, self).save(*args, **kwargs)
+
+    def import_members(self, file):
+        
+        df = pd.read_csv(file)
+        df = df.fillna(0)
+        
+        temp_columns = ["Customer ID", "Name", "Company / In Care Of", "Addr L1", "Addr L2", "Addr L3", "Addr L4", "Addr L5", "Country", "Member has opted-out of Toastmasters WHQ marketing mail", "Email", "Secondary Email", "Member has opted-out of Toastmasters WHQ marketing emails", "Home Phone", "Mobile Phone", "Additional Phone", "Member has opted-out of Toastmasters WHQ marketing phone calls", "Paid Until", "Member of Club Since", "Original Join Date", "status (*)", "Current Position", "Future Position", "Pathways Enrolled"]
+        req_cols = {"Customer ID":True, "Name":True, "Company / In Care Of":False, "Addr L1":True, "Addr L2":False, "Addr L3":False, "Addr L4":False, "Addr L5":False, "Country":True, "Member has opted-out of Toastmasters WHQ marketing mail":False, "Email":True, "Secondary Email":False, "Member has opted-out of Toastmasters WHQ marketing emails":False, "Home Phone":False, "Mobile Phone":False, "Additional Phone":False, "Member has opted-out of Toastmasters WHQ marketing phone calls":False, "Paid Until":True, "Member of Club Since":False, "Original Join Date":False, "status (*)":True, "Current Position":False, "Future Position":False, "Pathways Enrolled":False}
+        
+        header = df.columns.tolist()
+        if header == temp_columns:
+            for key, value in req_cols.items():
+                if value:
+                    if df[key].isnull().values.any():
+                        raise ValueError("values contain empty cell(s)!")
+            # Data is valid. 
+            user_list = []
+            member_list = []
+
+
+            for index, row in df.iterrows():
+
+                #check if user exists already
+                user_obj, created = User.objects.update_or_create(
+                    email = row['Email'],
+                    defaults = {'full_name':row['Name'],
+                                "address" : row['Addr L1'],
+                                "country" : row['Country'],
+                                "home_phone" : row['Home Phone'],
+                                "mobile_phone" : row['Mobile Phone'],
+                                "address" : row['Addr L1'] + ' ' + row['Addr L1'] + ' ' + row['Addr L5'],
+                                #"paid_until" : row['Paid Until'],
+                                "toastmaster_id" : row['Customer ID']
+                            }
+
+                )
+
+                paid_status = True if row['status (*)'] == 'paid' else False
+                active = True
+                is_ec = False if row['Current Position'] is None or row['Current Position'] == 0 else True
+
+                user_list.append(user_obj)
+                member_obj, created = Member.objects.update_or_create(
+                    club = club_obj, user = user_obj,
+                    defaults={'paid_status' : paid_status,
+                              'is_EC': is_ec,
+                              'active': active}
+                )
+
+                member_list.append(member_obj)
+
+            club_member_ids = list(self.members.filter(active = True).values_list('pk', flat = True))
+            new_member_ids = [member.pk for member in member_list]
+            inactive_member_ids = tuple(set(club_member_ids) - set(new_member_ids))
+            Member.objects.filter(id__in = inactive_member_ids).update(paid_status = False, is_EC = False, active = False)
+        else:
+            raise ValueError("Template is not correct. Please check again!")
 
     def __str__(self):
         return self.name
