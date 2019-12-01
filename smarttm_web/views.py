@@ -101,16 +101,15 @@ def set_club(request, club_id):
 @login_required()
 def import_members(request, club_id):
     
-    club_obj = Club.objects.get(pk=club_key)
+    club_obj = Club.objects.get(pk=club_id)
     if request.method == 'POST':
-        myfile = request.FILES['importfile']
+        import_file = request.FILES['importfile']
         try:
-            club_obj.import_members(file)
+            club_obj.import_members(import_file)
             messages.success(request, 'Members imported.')
         except Exception as e:
-            messages.warning(request, repr(e)) 
-        
-    return redirect('manage_club')
+            messages.warning(request, repr(e))
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required()
 def summary(request):
@@ -255,14 +254,11 @@ def member_detail(request, club_id, member_id):
 
 
 @login_required()
-def club_management(request):
+def club_management(request, club_id):
     if request.user.is_authenticated:
         # Need to get club ID from session.
-        club_key = request.session['SelectedClub'][0]
-        club_obj = Club.objects.get(pk=club_key)
-            
+        club_obj = Club.objects.get(pk=club_id)
         club_members = club_obj.members.filter(active=True)
-
         return render(request, 'manageclub.html', { 'club_members' : club_members})
 
     else:
@@ -278,7 +274,7 @@ def send_participation_email(request, club_id):
     except:
         pass
     messages.info(request, 'Email will be sent to the members in background.')
-    return redirect('manage_club')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def email_send_thread(club_id):

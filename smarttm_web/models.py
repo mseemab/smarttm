@@ -148,7 +148,7 @@ class Club(models.Model):
 
                 user_list.append(user_obj)
                 member_obj, created = Member.objects.update_or_create(
-                    club = club_obj, user = user_obj,
+                    club = self, user = user_obj,
                     defaults={'paid_status' : paid_status,
                               'is_EC': is_ec,
                               'active': active}
