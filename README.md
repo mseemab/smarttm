@@ -1,4 +1,4 @@
-# smartiepants AKA SMARTTM
+# SMARTTM
 
 SMARTTM is used to monitor the progress of members in a toastmasters club. It presents data in a visualized form so VP Education can make agenda decisions effectively.
 
