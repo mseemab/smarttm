@@ -227,6 +227,12 @@ def club_ranking(request, club_id):
             name='Prepared Speech')).count()
         sum_obj.evaluation_count = partication_set.filter(member=club_mem, participation_type=partication_types.get(
             name='Evaluation')).count()
+        sum_obj.ttm_count = partication_set.filter(member=club_mem,
+                               participation_type=partication_types.get(name='Table Topics Master')).count()
+        sum_obj.ge_count = partication_set.filter(member=club_mem,
+                               participation_type=partication_types.get(name='General Evaluator')).count()
+        sum_obj.toe_count = partication_set.filter(member=club_mem,
+                               participation_type=partication_types.get(name='Toastmaster of the Evening')).count()
         if request.method == "POST":
             presents = Attendance.objects.filter(member=club_mem, present=True,
                                                  created_date__range=(FromDate, ToDate)).count()

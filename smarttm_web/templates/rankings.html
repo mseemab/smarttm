@@ -80,6 +80,9 @@
 									<th>Evaluations</th>
 <!--									<th>Basic Leadership roles</th>-->
 									<th>Advanced Leadership roles</th>
+									<th style="display: none">Table Topics Master Count</th>
+									<th style="display: none">Toastmaster of the Evening Count</th>
+									<th style="display: none">General Evaluator Count</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -98,6 +101,9 @@
 										<td>{{ summ_Obj.evaluation_count }}</td>
 <!--										<td><a href="#" onClick="GetHistory({{ summ_Obj.member.pk }}, 'basic');">{{ summ_Obj.basic_role_count }}</a></td>-->
 										<td><a href="#" onClick="GetHistory({{ summ_Obj.member.pk }}, 'advanced');">{{ summ_Obj.adv_role_count }}</a></td>
+										<td style="display: none">{{ summ_Obj.ttm_count }}</td>
+										<td style="display: none">{{ summ_Obj.toe_count }}</td>
+										<td style="display: none">{{ summ_Obj.ge_count }}</td>
 									</tr>
 								{% endfor %}
 							</tbody>
