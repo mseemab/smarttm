@@ -1,14 +1,14 @@
 {% extends "basefile.html" %}
 
 
-{% block title %}{{ member_name }}'s Participation Stats - SMARTTM {%endblock%}
+{% block title %}{{ part_summary.member_name }}'s Participation Stats - SMARTTM {%endblock%}
 {% block body_block%}
 		
 
 <div class="container-fluid">
 			<br>
 			<br>
-			<h3>{{ member_name }}'s Participation Stats</h3>
+			<h3>{{ part_summary.member_name }}'s Participation Stats</h3>
 
 		</div>
 		<br />
@@ -17,28 +17,28 @@
 				<div class="col-sm" >
 					<div class="counter" >
 						<i class="fas fa-check fa-2x"></i>
-						<h2 class="timer count-title count-number" data-to="{{ present_count }}" data-speed="800">{{ present_count }}</h2>
+						<h2 class="timer count-title count-number" data-to="{{ part_summary.present_count }}" data-speed="800">{{ part_summary.present_count }}</h2>
 						<p class="count-text "><b>Meetings Attendance</b></p>
 					</div>
 				</div>
 				<div class="col-sm" >
 					<div class="counter" >
 						<i class="fas fa-chalkboard-teacher fa-2x"></i>
-						<h2 class="timer count-title count-number" data-to="{{ meeting_part_count }}" data-speed="800">{{ parts_count }}</h2>
+						<h2 class="timer count-title count-number" data-to="{{ part_summary.meeting_part_count }}" data-speed="800">{{ part_summary.parts_count }}</h2>
 						<p class="count-text "><b>Meetings Participation</b></p>
 					</div>
 				</div>
 				<div class="col-sm" >
 					<div class="counter" >
 						<i class="fas fa-street-view fa-2x"></i>
-						<h2 class="timer count-title count-number" data-to="{{ tt_speech_count }}" data-speed="800">{{ tt_speech_count }}</h2>
+						<h2 class="timer count-title count-number" data-to="{{ part_summary.tt_speech_count }}" data-speed="800">{{ part_summary.tt_speech_count }}</h2>
 						<p class="count-text "><b>Table Topics</b></p>
 					</div>
 				</div>
 				<div class="col-sm" >
 					<div class="counter" >
 						<i class="fas fa-chalkboard-teacher fa-2x"></i>
-						<h2 class="timer count-title count-number" data-to="{{ prepared_speech_count }}" data-speed="800">{{ prepared_speech_count }}</h2>
+						<h2 class="timer count-title count-number" data-to="{{ part_summary.prep_speech_count }}" data-speed="800">{{ part_summary.prep_speech_count }}</h2>
 						<p class="count-text "><b>Prepared Speeches</b></p>
 					</div>
 				</div>
@@ -46,14 +46,14 @@
 				<div class="col-sm" >
 					<div class="counter" >
 						<i class="fas fa-tasks fa-2x"></i>
-						<h2 class="timer count-title count-number" data-to="{{ eval_speech_count }}" data-speed="800">{{ eval_speech_count }}</h2>
+						<h2 class="timer count-title count-number" data-to="{{ part_summary.eval_speech_count }}" data-speed="800">{{ part_summary.eval_speech_count }}</h2>
 						<p class="count-text "><b>Evaluations</b></p>
 					</div>
 				</div>
 				<div class="col-sm" >
 					<div class="counter" >
 						<i class="fas fa-stamp fa-2x"></i>
-						<h2 class="timer count-title count-number" data-to="{{ adv_roles_count }}" data-speed="800">{{ adv_roles_count }}</h2>
+						<h2 class="timer count-title count-number" data-to="{{ part_summary.adv_roles_count }}" data-speed="800">{{ part_summary.adv_roles_count }}</h2>
 						<p class="count-text "><b>Advanced Roles</b></p>
 					</div>
 				</div>

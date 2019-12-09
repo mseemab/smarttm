@@ -210,6 +210,24 @@ class Member(models.Model):
 
         super(Member, self).save(*args, **kwargs)
 
+    def get_part_summary(self):
+        member_summary = Member_Summary()
+        part_types = Participation_Type.objects.all()
+        cat_adv = part_types.filter(category='Role-Advanced')
+        cat_adv_ids = [cat.id for cat in cat_adv]
+        tt = part_types.get(name="Table Topic")
+        eval = part_types.get(name="Evaluation")
+        prep_speech = part_types.get(name="Prepared Speech")
+        member_summary.prep_speech_count = Participation.objects.filter(member=self, participation_type_id=prep_speech.id).count()
+        member_summary.tt_speech_count = Participation.objects.filter(member=self, participation_type_id=tt.id).count()
+        member_summary.eval_speech_count = Participation.objects.filter(member=self, participation_type_id=eval.id).count()
+        member_summary.adv_roles_count = Participation.objects.filter(member=self, participation_type_id__in=cat_adv_ids).count()
+        member_summary.present_count = Attendance.objects.filter(member=self, present=True).count()
+        member_summary.parts_count = Participation.objects.filter(member=self).count()
+        member_summary.meeting_part_count = Participation.objects.filter(member=self).values('meeting_id').distinct().count()
+        member_summary.member_name = self.user.full_name
+        return member_summary
+
     def __str__(self):
         return self.user.full_name+'__'+self.club.name
 
@@ -412,3 +430,13 @@ class Meeting_Summary(models.Model):
     prep_speech_count = models.IntegerField(default=0)
     members_present_count = models.IntegerField(default=0)
     members_absent_count = models.IntegerField(default=0)
+
+class Member_Summary(models.Model):
+    member_name = models.CharField(max_length = 100)
+    prep_speech_count = models.IntegerField(default=0)
+    tt_speech_count = models.IntegerField(default=0)
+    eval_speech_count = models.IntegerField(default=0)
+    adv_roles_count = models.IntegerField(default=0)
+    present_count = models.IntegerField(default=0)
+    parts_count = models.IntegerField(default=0)
+    meeting_part_count = models.IntegerField(default=0)
