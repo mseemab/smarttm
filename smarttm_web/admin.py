@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 # Register your models here.
-from smarttm_web.models import Participation_Type, Position, User, Club, Participation, Member, EC_Member, Meeting, Evaluation
+from smarttm_web.models import Participation_Type, Position, User, Club, Participation, Member, EC_Member, Meeting, Evaluation, Attendance
 
 class PositionAdmin(admin.ModelAdmin):
     list_display = ('name', 'seniority')
@@ -9,10 +9,8 @@ class PositionAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'full_name', 'is_staff', 'is_admin', 'last_login', 'get_groups')
 
-
 class ParticipationTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'category')
-
 
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'club', 'paid_status', 'active', 'is_EC')
@@ -28,4 +26,5 @@ admin.site.register(Participation, ParticipationAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(EC_Member)
 admin.site.register(Meeting)
+admin.site.register(Attendance)
 admin.site.register(Evaluation)
