@@ -89,14 +89,21 @@ def register(request):
         user_form = UserForm()
     return render(request, 'registration/register.html', {'user_form': user_form, 'registered': registered})
 
-
+@login_required()
 def set_club(request, club_id):
-    
-    club_details = Club.objects.get(pk=club_id)
-    request.session['SelectedClub'] = [club_details.pk,club_details.name]
-    request.session.modified = True
-   
+    user = request.user
+    try:
+        except_msg = 'You are not a member of this club'
+        club = Club.objects.get(pk=club_id)
+        if club.is_member(user):
+            request.session['SelectedClub'] = [club.pk,club.name]
+            request.session.modified = True
+        else:
+            raise Exception(except_msg)
+    except:
+        messages.warning(request, except_msg)
     return redirect('ranking_summary')
+
 
 
 

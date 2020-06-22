@@ -19,7 +19,7 @@
       </a>
       <div class="dropdown-menu">
           {% for item in request.session.UserClubs %}
-            <a class="dropdown-item" href="/smarttm_web/SetClub/{{ item.0  }}/">{{ item.1  }}</a>
+            <a class="dropdown-item" href="{% url 'set_club' club_id=item.0 %}">{{ item.1  }}</a>
           {% endfor %}
       </div>
     </li>

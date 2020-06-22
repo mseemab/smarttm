@@ -163,6 +163,13 @@ class Club(models.Model):
         else:
             raise ValueError("Template is not correct. Please check again!")
 
+    def is_member(self, user):
+        try:
+            Member.objects.get(user=user, club=self, paid_status=True, active=True)
+            return True
+        except:
+            return False
+
     def __str__(self):
         return self.name
 
