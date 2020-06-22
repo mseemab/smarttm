@@ -209,7 +209,6 @@ def club_ranking(request, club_id):
 
     for i in range(len(summ)):
         summ[i].ranking = i + 1
-    pdb.set_trace()
     return render(request, 'rankings.html', {'page_title': 'User Rankings for ' + club_obj.name, 'summ_set': summ,
                                              'FromDate': request.POST.get("StartDate", ""),
                                              'ToDate': request.POST.get("EndDate", "")})
