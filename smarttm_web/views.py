@@ -35,18 +35,18 @@ def login_user(request):
 
         username = request.POST.get("email")
         password = request.POST.get("password")
-        
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
                 
-                login(request, user)
+
                 
                 # create sessions.
                 # Get user clubs
                 
                 user_clubs = user.member_user.all()
                 if not len(user_clubs) == 0:
+                    login(request, user)
                     UserClubData = []
                     for user_club in user_clubs:
                         UserClubData.append([user_club.club.pk, user_club.club.name])
@@ -55,10 +55,12 @@ def login_user(request):
 
                     request.session['SelectedClub'] = UserClubData[0]
 
-                request.session.modified = True
+                    request.session.modified = True
                 
-                return redirect('ranking_summary')
-                
+                    return redirect('ranking_summary')
+                else:
+                    messages.warning(request, 'You are not a member of any Club. Please join a club to use SMARTTM.')
+                    return redirect('LoginUser')
             else:
                 messages.warning(request, 'Your account is not activated') 
                 response = redirect('LoginUser')
@@ -87,14 +89,21 @@ def register(request):
         user_form = UserForm()
     return render(request, 'registration/register.html', {'user_form': user_form, 'registered': registered})
 
-
+@login_required()
 def set_club(request, club_id):
-    
-    club_details = Club.objects.get(pk=club_id)
-    request.session['SelectedClub'] = [club_details.pk,club_details.name]
-    request.session.modified = True
-   
+    user = request.user
+    try:
+        except_msg = 'You are not a member of this club'
+        club = Club.objects.get(pk=club_id)
+        if club.is_member(user):
+            request.session['SelectedClub'] = [club.pk,club.name]
+            request.session.modified = True
+        else:
+            raise Exception(except_msg)
+    except:
+        messages.warning(request, except_msg)
     return redirect('ranking_summary')
+
 
 
 
@@ -207,7 +216,6 @@ def club_ranking(request, club_id):
 
     for i in range(len(summ)):
         summ[i].ranking = i + 1
-
     return render(request, 'rankings.html', {'page_title': 'User Rankings for ' + club_obj.name, 'summ_set': summ,
                                              'FromDate': request.POST.get("StartDate", ""),
                                              'ToDate': request.POST.get("EndDate", "")})
