@@ -11,7 +11,7 @@ import pdb
 @login_required()
 def meetings_view(request):
     club_key = request.session['SelectedClub'][0]
-    meetings = Meeting.objects.filter(club__id = club_key)
+    meetings = reversed(Meeting.objects.filter(club__id = club_key))
     participation_types = Participation_Type.objects.all()
     part_type_speech = set(participation_types.filter(category = 'Speech').values_list('id', flat = True))
     part_type_tt = participation_types.get(name = 'Table Topic')
