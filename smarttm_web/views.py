@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse
 from smarttm_web.models import Meeting, User, Member, Club, Participation, Summary, Participation_Type, Attendance
 from django.shortcuts import render_to_response
 import pdb
@@ -22,7 +23,8 @@ import threading
 
 @login_required()
 def index(request):
-    return redirect('ranking_summary')
+
+    return redirect(reverse('club_rankings', args=(request.session['SelectedClub'][0],)))
 
 
         
@@ -44,7 +46,7 @@ def login_user(request):
                 # create sessions.
                 # Get user clubs
                 
-                user_clubs = user.member_user.all()
+                user_clubs = user.member_user.filter(paid_status=True, active=True)
                 if not len(user_clubs) == 0:
                     login(request, user)
                     UserClubData = []
@@ -57,7 +59,7 @@ def login_user(request):
 
                     request.session.modified = True
                 
-                    return redirect('ranking_summary')
+                    return redirect(reverse('index'))
                 else:
                     messages.warning(request, 'You are not a member of any Club. Please join a club to use SMARTTM.')
                     return redirect('LoginUser')
@@ -102,7 +104,7 @@ def set_club(request, club_id):
             raise Exception(except_msg)
     except:
         messages.warning(request, except_msg)
-    return redirect('ranking_summary')
+    return redirect(reverse('index'))
 
 
 
@@ -120,10 +122,7 @@ def import_members(request, club_id):
             messages.warning(request, repr(e))
     return redirect(request.META.get('HTTP_REFERER'))
 
-@login_required()
-def summary(request):
-    club_id = request.session['SelectedClub'][0]
-    return club_ranking(request, club_id)
+
 
 
 def club_ranking(request, club_id):
@@ -231,15 +230,18 @@ def member_detail(request, club_id, member_id):
 
 @login_required()
 def club_management(request, club_id):
-    if request.user.is_authenticated:
-        # Need to get club ID from session.
+    try:
+        except_msg = 'You are not a member of this club'
         club_obj = Club.objects.get(pk=club_id)
-        club_members = club_obj.members.filter(active=True)
-        return render(request, 'manageclub.html', { 'club_members' : club_members})
+        if not club_obj.is_member(request.user):
+            raise Exception(except_msg)
+    except:
+        messages.warning(request, except_msg)
+        return redirect('/')
+    club_members = club_obj.members.filter(active=True)
+    return render(request, 'manageclub.html', { 'club_members' : club_members})
 
-    else:
-        response = redirect('LoginUser')
-        return response
+
 
 @login_required()
 def send_participation_email(request, club_id):

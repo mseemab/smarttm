@@ -1,6 +1,6 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="{% url 'ranking_summary' %}"><i class="fas fa-glass-cheers" style="font-size:1.8em;"></i> SMART TM</a>
+  <a class="navbar-brand" href="{% url 'index' %}"><i class="fas fa-glass-cheers" style="font-size:1.8em;"></i> SMART TM</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -8,9 +8,9 @@
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       {% if user.is_authenticated %}
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item {% if request.resolver_match.url_name == 'ranking_summary' %}active{% endif %}" ><a href="{% url 'ranking_summary' %}" class="nav-link">Rankings</a></li>
-        <li class="nav-item {% if request.resolver_match.url_name == 'meeting_summary' %}active{% endif %}"><a  class="nav-link" href="{% url 'meeting_summary' %}">Meetings</a></li>
-        <li class="nav-item {% if request.resolver_match.url_name == 'manage_club' %}active{% endif %}"><a  class="nav-link"  href="{% url 'manage_club' club_id=request.session.SelectedClub.0 %}">Club Management </a></li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'club_rankings' %}active{% endif %}" ><a href="{% url 'club_rankings' club_id=request.session.SelectedClub.0 %}" class="nav-link">Rankings</a></li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'club_meetings' %}active{% endif %}"><a  class="nav-link" href="{% url 'club_meetings' club_id=request.session.SelectedClub.0 %}">Meetings</a></li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'club_members' %}active{% endif %}"><a  class="nav-link"  href="{% url 'club_members' club_id=request.session.SelectedClub.0 %}">Club Management </a></li>
     </ul>
     <ul class="navbar-nav my-2 my-lg-0">
     <li class="nav-item dropdown">

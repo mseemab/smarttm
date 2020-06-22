@@ -6,12 +6,20 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import pandas as pd
 from django.db.models import Q
+from django.urls import reverse
 import pdb
 
 @login_required()
-def meetings_view(request):
-    club_key = request.session['SelectedClub'][0]
-    meetings = reversed(Meeting.objects.filter(club__id = club_key))
+def meetings_view(request, club_id):
+    try:
+        except_msg = 'You are not a member of this club'
+        club_obj = Club.objects.get(pk=club_id)
+        if not club_obj.is_member(request.user):
+            raise Exception(except_msg)
+    except:
+        messages.warning(request, except_msg)
+        return redirect('/')
+    meetings = reversed(Meeting.objects.filter(club__id = club_id))
     participation_types = Participation_Type.objects.all()
     part_type_speech = set(participation_types.filter(category = 'Speech').values_list('id', flat = True))
     part_type_tt = participation_types.get(name = 'Table Topic')
@@ -33,7 +41,7 @@ def meetings_view(request):
     return render(request, 'meetings.html', {'summ_set': meeting_summary})
 
 @login_required()
-def meeting(request, meeting_id):
+def meeting(request, club_id, meeting_id):
     meeting = Meeting.objects.get(pk=meeting_id)
 
     # get participation_types
@@ -63,7 +71,7 @@ def add_meeting(request):
         ex_meeting_count = Meeting.objects.filter(Q(meeting_date = meeting_date) | Q(meeting_no = meeting_no), club_id = club_key ).count()
         if ex_meeting_count > 0:
             messages.warning(request, 'Meeting for %s or Meeting Number %s already exists' % (meeting_date, meeting_no))
-            response = redirect("meeting_summary")
+            response = redirect(reverse('club_meetings', args=(club_key,)))
             return response
         else:
             new_meeting = Meeting.objects.create(club_id = club_key, meeting_date = meeting_date, meeting_no = meeting_no)
@@ -76,7 +84,7 @@ def add_meeting(request):
                 new_att = Attendance(meeting = new_meeting, member = member)
                 attendances.append(new_att)
             Attendance.objects.bulk_create(attendances)
-            response = redirect( "meeting_summary")
+            response = redirect(reverse('club_meetings', args=(club_key,)))
             return response
 
 @login_required()

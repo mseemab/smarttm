@@ -48,7 +48,7 @@
 								{% for summ_Obj in summ_set %}
 									<tr>
 										<td>{{ summ_Obj.meeting.meeting_no }}</td>
-										<td><a href = "{% url 'meeting_detail' summ_Obj.meeting.pk %}">{{ summ_Obj.meeting.meeting_date }}</a></td>
+										<td><a href = "{% url 'meeting_detail' meeting_id=summ_Obj.meeting.pk club_id=summ_Obj.meeting.club.id %}">{{ summ_Obj.meeting.meeting_date }}</a></td>
 										<td>{{ summ_Obj.members_present_count }}</td>
 										<td>{{ summ_Obj.members_absent_count }}</td>
 										<td>{{ summ_Obj.speech_count }}</td>
