@@ -42,6 +42,15 @@ def meetings_view(request, club_id):
 
 @login_required()
 def meeting(request, club_id, meeting_id):
+    try:
+        except_msg = 'You are not a member of this club'
+        club_obj = Club.objects.get(pk=club_id)
+        if not club_obj.is_member(request.user):
+            raise Exception(except_msg)
+    except:
+        messages.warning(request, except_msg)
+        return redirect('/')
+
     meeting = Meeting.objects.get(pk=meeting_id)
 
     # get participation_types
