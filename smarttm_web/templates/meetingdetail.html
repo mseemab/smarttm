@@ -256,6 +256,7 @@
 								</select>
 								<input type="hidden" name="meeting_id" required class="form-data" value = "{{meeting.pk}}">
 								<input type="hidden" name="participation_id" class="form-data" value = '0'>
+								<input type="hidden" name="club_id" class="form-data" value = "{{request.session.SelectedClub.0}}">
 
 								<br>
 
@@ -340,7 +341,8 @@
 				data: {csrfmiddlewaretoken: '{{ csrf_token }}',
 				 		participation_type_id: $("#participationSelect").val(),
 				 		meeting_id: $("input[name=meeting_id]").val(),
-				 		member_id: $("#memberSelect").val()},
+				 		member_id: $("#memberSelect").val(),
+				 		club_id: $("input[name=club_id]").val()},
 				url: "/api/participation/"+part_id+"/",
 				type: method,
 				success: function(data){

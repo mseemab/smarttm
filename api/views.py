@@ -235,9 +235,11 @@ class ParticipationObj(APIView):
             })
     def post(self, request, participation_id):
         try:
-            part = Participation.objects.create(meeting_id = int(request.POST.get('meeting_id', 0)),
-                                                member_id = int(request.POST.get('member_id', 0)),
-                                                participation_type_id = int(request.POST.get('participation_type_id', 0)))
+            part = Participation.objects.create(meeting_id = int(request.POST.get('meeting_id')),
+                                                member_id = int(request.POST.get('member_id')),
+                                                participation_type_id = int(request.POST.get('participation_type_id')),
+                                                club_id = int(request.POST.get('club_id'))
+                                                )
             part.save()
             return Response({
                 'status': 'success'
@@ -248,10 +250,12 @@ class ParticipationObj(APIView):
             })
 
     def put(self, request, participation_id):
+
         try:
-            part = Participation.objects.update_or_create(id=participation_id,
-                                                          defaults={'member_id':int(request.POST.get('member_id', 0)),
-                                                          'participation_type_id':int(request.POST.get('participation_type_id', 0))})
+            part = Participation.objects.get(id=participation_id)
+            part.member_id=int(request.POST.get('member_id'))
+            part.participation_type_id=int(request.POST.get('participation_type_id'))
+            part.save()
             return Response({
                 'status': 'success'
             })
