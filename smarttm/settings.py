@@ -26,7 +26,7 @@ SECRET_KEY = store.SECRET_KEY
 
 AUTH_USER_MODEL = 'smarttm_web.User'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 REST_FRAMEWORK = {
@@ -92,9 +92,9 @@ WSGI_APPLICATION = 'smarttm.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
-DATABASES = store.DATABASES
+DATABASES = store.DATABASES_TEST if DEBUG else store.DATABASES
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -160,8 +160,9 @@ STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystem
 AWS_DEFAULT_ACL = None
 
 #email settings
-EMAIL_HOST = store.EMAIL_HOST
-EMAIL_PORT = store.EMAIL_PORT
-EMAIL_HOST_USER = store.EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = store.EMAIL_HOST_PASSWORD
+EMAIL_HOST = store.EMAIL_HOST_TEST if DEBUG else store.EMAIL_HOST
+EMAIL_PORT = store.EMAIL_PORT_TEST if DEBUG else store.EMAIL_PORT
+EMAIL_HOST_USER = store.EMAIL_HOST_USER_TEST if DEBUG else store.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = store.EMAIL_HOST_PASSWORD_TEST if DEBUG else store.EMAIL_HOST_PASSWORD
+DEFAULT_FROM_EMAIL = store.EMAIL_HOST_USER_TEST if DEBUG else store.EMAIL_HOST_USER
 EMAIL_USE_TLS = True

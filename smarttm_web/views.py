@@ -62,14 +62,14 @@ def login_user(request):
                     return redirect(reverse('index'))
                 else:
                     messages.warning(request, 'You are not a member of any Club. Please join a club to use SMARTTM.')
-                    return redirect('LoginUser')
+                    return redirect('login_user')
             else:
                 messages.warning(request, 'Your account is not activated') 
-                response = redirect('LoginUser')
+                response = redirect('login_user')
                 return response
         else:
            messages.warning(request, 'Invalid email/password.') 
-           response = redirect('LoginUser')
+           response = redirect('login_user')
            return response
     else:
         

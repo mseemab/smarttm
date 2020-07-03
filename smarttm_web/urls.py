@@ -4,7 +4,7 @@ from django.urls import path, include # new
 from smarttm_web import meeting_views
 urlpatterns = [
     path('', views.index, name = 'index'),
-    path('accounts/login/', views.login_user, name = 'LoginUser'),
+    path('accounts/login/', views.login_user, name = 'login_user'),
     path('accounts/register/', views.register , name = 'register'),
     path('clubs/<int:club_id>/meetings/', meeting_views.meetings_view, name = 'club_meetings'),
     path('clubs/<int:club_id>/meetings/<int:meeting_id>/', meeting_views.meeting, name = 'meeting_detail'),
