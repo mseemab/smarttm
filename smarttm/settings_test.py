@@ -29,6 +29,9 @@ AUTH_USER_MODEL = 'smarttm_web.User'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 REST_FRAMEWORK = {
     # When you enable API versioning, the request.version attribute will contain a string
     # that corresponds to the version requested in the incoming client request.
@@ -160,8 +163,9 @@ STATICFILES_FINDERS = (           'django.contrib.staticfiles.finders.FileSystem
 AWS_DEFAULT_ACL = None
 
 #email settings
-EMAIL_HOST = store.EMAIL_HOST
-EMAIL_PORT = store.EMAIL_PORT
-EMAIL_HOST_USER = store.EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = store.EMAIL_HOST_PASSWORD
+EMAIL_HOST = store.EMAIL_HOST_TEST
+EMAIL_PORT = store.EMAIL_PORT_TEST
+EMAIL_HOST_USER = store.EMAIL_HOST_USER_TEST
+EMAIL_HOST_PASSWORD = store.EMAIL_HOST_PASSWORD_TEST
+DEFAULT_FROM_EMAIL = store.EMAIL_HOST_USER_TEST
 EMAIL_USE_TLS = True
