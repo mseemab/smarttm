@@ -18,19 +18,19 @@ from smarttm_web.forms import UserForm
 from django.core.mail import send_mail
 from django.template import loader
 import threading
+from .decorators import query_debugger, request_passes_test
 # Create your views here.
 
-
-@login_required()
-def index(request):
-
-    return redirect(reverse('club_rankings', args=(request.session['SelectedClub'][0],)))
+def user_is_member(request):
+    club_id=request.path.split('/')[2]
+    return request.user.is_member(club_id)
 
 
-        
-#
-# Login User & create sessions.
-#        
+def user_is_ec(request):
+    club_id=request.path.split('/')[2]
+    return request.user.is_ec(club_id)
+
+
 def login_user(request):
     
     if request.method == 'POST':
@@ -91,25 +91,25 @@ def register(request):
         user_form = UserForm()
     return render(request, 'registration/register.html', {'user_form': user_form, 'registered': registered})
 
+
 @login_required()
+def index(request):
+
+    return redirect(reverse('club_rankings', args=(request.session['SelectedClub'][0],)))
+
+
+@login_required()
+@request_passes_test(user_is_member)
 def set_club(request, club_id):
     user = request.user
-    try:
-        except_msg = 'You are not a member of this club'
-        club = Club.objects.get(pk=club_id)
-        if club.is_member(user):
-            request.session['SelectedClub'] = [club.pk,club.name]
-            request.session.modified = True
-        else:
-            raise Exception(except_msg)
-    except:
-        messages.warning(request, except_msg)
+    club = Club.objects.get(id=club_id)
+    request.session['SelectedClub'] = [club.pk,club.name]
+    request.session.modified = True
     return redirect(reverse('index'))
 
 
-
-
 @login_required()
+@request_passes_test(user_is_ec)
 def import_members(request, club_id):
     
     club_obj = Club.objects.get(pk=club_id)
@@ -123,8 +123,9 @@ def import_members(request, club_id):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
-
-
+@query_debugger
+@login_required()
+@request_passes_test(user_is_member)
 def club_ranking(request, club_id):
     club_obj = Club.objects.get(pk=club_id)
     club_members = club_obj.members.filter(active=True, paid_status=True)
@@ -220,7 +221,8 @@ def club_ranking(request, club_id):
                                              'ToDate': request.POST.get("EndDate", "")})
 
 
-
+@login_required()
+@request_passes_test(user_is_member)
 def member_detail(request, club_id, member_id):
         # Roles Performed Count
         parts = Participation.objects.filter(member_id=member_id)
@@ -228,22 +230,17 @@ def member_detail(request, club_id, member_id):
         part_summary = member.get_part_summary()
         return render(request, 'memberdetail.html', {'part_summary': part_summary, 'parts': parts} )
 
+
 @login_required()
+@request_passes_test(user_is_member)
 def club_management(request, club_id):
-    try:
-        except_msg = 'You are not a member of this club'
-        club_obj = Club.objects.get(pk=club_id)
-        if not club_obj.is_member(request.user):
-            raise Exception(except_msg)
-    except:
-        messages.warning(request, except_msg)
-        return redirect('/')
+    club_obj = Club.objects.get(pk=club_id)
     club_members = club_obj.members.filter(active=True)
     return render(request, 'manageclub.html', { 'club_members' : club_members})
 
 
-
 @login_required()
+@request_passes_test(user_is_ec)
 def send_participation_email(request, club_id):
     try:
         t = threading.Thread(target=email_send_thread, args=(club_id,))

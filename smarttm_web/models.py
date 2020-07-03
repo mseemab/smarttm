@@ -67,6 +67,20 @@ class User(AbstractBaseUser, PermissionsMixin):
             groups_str = groups_str + ' ' + user_group.name + ','
         return groups_str
 
+    def is_member(self, club_id):
+        try:
+            Member.objects.get(user=self, club_id=club_id, active=True, paid_status=True)
+            return True
+        except:
+            return False
+
+    def is_ec(self, club_id):
+        try:
+            Member.objects.get(user=self, club_id=club_id, active=True, paid_status=True, is_EC=True)
+            return True
+        except:
+            return False
+
     def save(self, *args, **kwargs):
         req_user = get_username()
         if not req_user is None:

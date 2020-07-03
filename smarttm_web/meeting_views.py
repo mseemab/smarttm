@@ -70,10 +70,10 @@ def meeting(request, club_id, meeting_id):
                                                   'attendance': attendance, 'part_types': part_types})
 
 @login_required()
-def add_meeting(request):
+def add_meeting(request, club_id):
     if request.method == 'POST':
 
-        club_key = request.session['SelectedClub'][0]
+        club_key = club_id
         meeting_date = request.POST.get('meeting_date')
         meeting_no = request.POST.get('meeting_no')
         #check if meeting already exists
@@ -97,7 +97,7 @@ def add_meeting(request):
             return response
 
 @login_required()
-def import_meeting_data(request):
+def import_meeting_data(request, club_id):
     header_list = ['Member ID', 'Member Name', 'Participation Type']
     if request.method == 'POST':
         import_file = request.FILES['importfile']
@@ -116,7 +116,7 @@ def import_meeting_data(request):
 
         data_df = data_df.drop_duplicates(['Member ID', 'Participation Type'])
         meeting_id = request.POST.get('meeting_id')
-        club_key = request.session['SelectedClub'][0]
+        club_key = club_id
         club_members = Member.objects.filter(club_id = club_key, active = True)
         parts = Participation.objects.filter(meeting_id = meeting_id)
         part_types = Participation_Type.objects.all()
