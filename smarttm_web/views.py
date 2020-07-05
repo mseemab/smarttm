@@ -19,6 +19,7 @@ from django.core.mail import send_mail
 from django.template import loader
 import threading
 from .decorators import query_debugger, request_passes_test
+from datetime import datetime
 # Create your views here.
 
 def user_is_member(request):
@@ -40,18 +41,15 @@ def login_user(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
-                
-
-                
-                # create sessions.
+               # create sessions.
                 # Get user clubs
                 
-                user_clubs = user.member_user.filter(paid_status=True, active=True)
-                if not len(user_clubs) == 0:
+                clubs = user.get_clubs()
+                if not len(clubs) == 0:
                     login(request, user)
                     UserClubData = []
-                    for user_club in user_clubs:
-                        UserClubData.append([user_club.club.pk, user_club.club.name])
+                    for club in clubs:
+                        UserClubData.append([club.pk, club.name, user.is_ec(club)])
 
                     request.session['UserClubs'] = UserClubData
 
@@ -103,7 +101,7 @@ def index(request):
 def set_club(request, club_id):
     user = request.user
     club = Club.objects.get(id=club_id)
-    request.session['SelectedClub'] = [club.pk,club.name]
+    request.session['SelectedClub'] = [club.pk,club.name,user.is_ec(club)]
     request.session.modified = True
     return redirect(reverse('index'))
 
@@ -127,22 +125,37 @@ def import_members(request, club_id):
 @login_required()
 @request_passes_test(user_is_member)
 def club_ranking(request, club_id):
+
+    if request.method == 'POST':
+        from_date = request.POST.get("StartDate", "")
+        to_date = request.POST.get("EndDate", "")
+    else:
+        if datetime.today().month > 6 and datetime.today().month <=12:
+            from_year = datetime.today().year
+        else:
+            from_year = datetime.today().year - 1
+        from_date = str(from_year)+ '-07-01'
+        to_date = datetime.today().strftime("%Y-%m-%d")
+
     club_obj = Club.objects.get(pk=club_id)
     club_members = club_obj.members.filter(active=True, paid_status=True)
-    FromDate = ""
-    ToDate = ""
-    if request.method == 'POST':
 
-        FromDate = request.POST.get("StartDate", "")
-        ToDate = request.POST.get("EndDate", "")
+    club_meets = club_obj.meeting_set.filter(meeting_date__range=(from_date, to_date))
+    partication_set = Participation.objects.none()
+    attendance_set = Attendance.objects.none()
+    for meet in club_meets:
+        partication_set = partication_set | meet.participation_set.all()
+        attendance_set = attendance_set | meet.attendance_set.all()
 
-        partication_set = club_obj.participation_set.filter(created_date__range=(FromDate, ToDate))
-    else:
-        partication_set = club_obj.participation_set.filter()
+    category_adv = Participation_Type.objects.filter(category='Role-Advanced')
+    category_basic = Participation_Type.objects.filter(category='Role-Basic')
+    tt_type = Participation_Type.objects.get(name='Table Topic')
+    speech_type = Participation_Type.objects.get(name='Prepared Speech')
+    eval_type = Participation_Type.objects.get(name='Evaluation')
+    ge_type = Participation_Type.objects.get(name='General Evaluator')
+    ttm_type = Participation_Type.objects.get(name='Table Topics Master')
+    toe_type = Participation_Type.objects.get(name='Toastmaster of the Evening')
 
-    partication_types = Participation_Type.objects.all()
-    category_adv = partication_types.filter(category='Role-Advanced')
-    category_basic = partication_types.filter(category='Role-Basic')
     summ = []
 
     club_member_ids = [member.pk for member in club_members]
@@ -152,7 +165,7 @@ def club_ranking(request, club_id):
     for absent in latest_absents:
         latest_absents_dict[absent.member_id] = absent.count_absents
 
-    participation_count = Participation.get_participation_count(club_member_ids)
+    participation_count = Participation.get_participation_count(club_member_ids, from_date, to_date)
     part_percent_dict = {}
     for part_count in participation_count:
         part_percent_dict[part_count.id] = math.ceil(
@@ -161,32 +174,20 @@ def club_ranking(request, club_id):
     for club_mem in club_members:
         sum_obj = Summary()
         sum_obj.member = club_mem
-        tt_count = partication_set.filter(member=club_mem,
-                                          participation_type=partication_types.get(name='Table Topic')).count()
-        sum_obj.tt_count = tt_count
-        sum_obj.speeches_count = partication_set.filter(member=club_mem, participation_type=partication_types.get(
-            name='Prepared Speech')).count()
-        sum_obj.evaluation_count = partication_set.filter(member=club_mem, participation_type=partication_types.get(
-            name='Evaluation')).count()
-        sum_obj.ttm_count = partication_set.filter(member=club_mem,
-                               participation_type=partication_types.get(name='Table Topics Master')).count()
-        sum_obj.ge_count = partication_set.filter(member=club_mem,
-                               participation_type=partication_types.get(name='General Evaluator')).count()
-        sum_obj.toe_count = partication_set.filter(member=club_mem,
-                               participation_type=partication_types.get(name='Toastmaster of the Evening')).count()
-        if request.method == "POST":
-            presents = Attendance.objects.filter(member=club_mem, present=True,
-                                                 created_date__range=(FromDate, ToDate)).count()
-            absents = Attendance.objects.filter(member=club_mem, present=False,
-                                                created_date__range=(FromDate, ToDate)).count()
-        else:
-            presents = Attendance.objects.filter(member=club_mem, present=True).count()
-            absents = Attendance.objects.filter(member=club_mem, present=False).count()
+        sum_obj.tt_count = partication_set.filter(member=club_mem, participation_type=tt_type).count()
+        sum_obj.speeches_count = partication_set.filter(member=club_mem, participation_type=speech_type).count()
+        sum_obj.evaluation_count = partication_set.filter(member=club_mem, participation_type=eval_type).count()
+        sum_obj.ttm_count = partication_set.filter(member=club_mem, participation_type=ttm_type).count()
+        sum_obj.ge_count = partication_set.filter(member=club_mem, participation_type=ge_type).count()
+        sum_obj.toe_count = partication_set.filter(member=club_mem, participation_type=toe_type).count()
+        sum_obj.adv_role_count = partication_set.filter(member=club_mem, participation_type__in=category_adv).count()
+        sum_obj.basic_role_count = partication_set.filter(member=club_mem, participation_type__in=category_basic).count()
+
+        presents = attendance_set.filter(member=club_mem, present=True).count()
+        absents = attendance_set.filter(member=club_mem, present=False).count()
 
         sum_obj.attendance_percent = math.ceil(
             (presents / (presents + absents)) * 100) if presents + absents != 0 else 0
-        sum_obj.tt_percent = math.ceil((tt_count / presents) * 100) if presents != 0 else 0
-
         try:
             sum_obj.last_absents = latest_absents_dict[club_mem.id]
         except:
@@ -195,12 +196,7 @@ def club_ranking(request, club_id):
             sum_obj.part_percent = part_percent_dict[club_mem.id]
         except:
             sum_obj.sum_obj.part_percent = 0
-        for part_type in category_adv:
-            sum_obj.adv_role_count = sum_obj.adv_role_count + partication_set.filter(member=club_mem,
-                                                                                     participation_type=part_type).count()
-        for part_type in category_basic:
-            sum_obj.basic_role_count = sum_obj.basic_role_count + partication_set.filter(member=club_mem,
-                                                                                         participation_type=part_type).count()
+
 
         summ.append(sum_obj)
 
@@ -217,8 +213,8 @@ def club_ranking(request, club_id):
     for i in range(len(summ)):
         summ[i].ranking = i + 1
     return render(request, 'rankings.html', {'page_title': 'User Rankings for ' + club_obj.name, 'summ_set': summ,
-                                             'FromDate': request.POST.get("StartDate", ""),
-                                             'ToDate': request.POST.get("EndDate", "")})
+                                             'from_date': from_date,
+                                             'to_date': to_date})
 
 
 @login_required()

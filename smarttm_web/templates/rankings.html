@@ -40,9 +40,8 @@
 			{% if user.is_authenticated %}
 			<div class="row">
 			<div class="col-sm" >
-						
-						{% if FromDate != '' %}
-							<h4>Time Period: <span class='badge badge-primary'>{{ FromDate }}</span> to <span class='badge badge-primary'>{{ ToDate }}</span></h4>
+						{% if from_date %}
+							<h4>Time Period: <span class='badge badge-primary'>{{ from_date }}</span> to <span class='badge badge-primary'>{{ to_date }}</span></h4>
 						{% else %}
 							
 						{% endif %}
@@ -79,7 +78,6 @@
 									<th>TT Participation</th>
 									<th>Speeches Participation</th>
 									<th>Evaluations</th>
-<!--									<th>Basic Leadership roles</th>-->
 									<th>Advanced Leadership roles</th>
 									<th style="display: none">Table Topics Master Count</th>
 									<th style="display: none">Toastmaster of the Evening Count</th>
@@ -97,7 +95,6 @@
 										<td>{{ summ_Obj.attendance_percent }} %</td>
 										<td>{{ summ_Obj.last_absents }}</td>
 										<td>{{ summ_Obj.part_percent }} %</td>
-<!--										<td>{{ summ_Obj.tt_percent }} %</td>-->
 										<td>{{ summ_Obj.tt_count }}</td>
 										<td>{{ summ_Obj.speeches_count }}</td>
 										<td>{{ summ_Obj.evaluation_count }}</td>

@@ -11,6 +11,7 @@
 				<div class="col-sm">
 					<h3>Meeting Details of {{ meeting.meeting_date }}</h3>
 				</div>
+				{% if request.session.SelectedClub.2 %}
 				<div class="col-sm" style="text-align:right;">
 					<h3>
 					<button type="button" class="btn btn-outline-primary btn-rounded" data-partid="0" data-memid="0" data-parttype="0" data-toggle="modal" data-target="#createUpdatePartModal">
@@ -22,6 +23,7 @@
 					</button>
 					</h3>
 				</div>
+				{% endif %}
 
 
 			</div>
@@ -47,7 +49,9 @@
 									<th>Total Duration</th>
 									<th>AH Counts</th>
 									<th>Vote Counts</th>
+									{% if request.session.SelectedClub.2 %}
 									<th>Action</th>
+									{% endif %}
 
 								</tr>
 							</thead>
@@ -60,10 +64,12 @@
 										<td>{{ part_Obj.time_seconds }}</td>
 										<td>{{ part_Obj.ah_count }}</td>
 										<td>{{ part_Obj.vote_count }}</td>
+										{% if request.session.SelectedClub.2 %}
 										<td>
 											<a data-partid="{{ part_Obj.id }}" data-memid="{{ part_Obj.member.id }}" data-parttype="{{ part_Obj.participation_type.id }}" data-toggle="modal" data-target="#createUpdatePartModal"><i class="far fa-edit"></i></a>
 											&nbsp&nbsp&nbsp
 											<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a></td>
+										{% endif %}
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -86,7 +92,9 @@
 									<td> # </td>
 									<th>Role Name</th>
 									<th>Performed By</th>
+									{% if request.session.SelectedClub.2 %}
 									<th>Action</th>
+									{% endif %}
 								</tr>
 							</thead>
 							<tbody>
@@ -95,10 +103,12 @@
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
                                         <td>{{ part_Obj.member.user.full_name }}</td>
+										{% if request.session.SelectedClub.2 %}
 										<td><a data-partid="{{ part_Obj.id }}" data-memid="{{ part_Obj.member.id }}" data-parttype="{{ part_Obj.participation_type.id }}" data-toggle="modal" data-target="#createUpdatePartModal"><i class="far fa-edit"></i></a>
 											&nbsp&nbsp&nbsp
 											<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a>
 										</td>
+										{% endif %}
 										</tr>
 								{% endfor %}
 							</tbody>
@@ -117,7 +127,9 @@
 									<td> # </td>
 									<th>Role Name</th>
 									<th>Performed By</th>
+									{% if request.session.SelectedClub.2 %}
 									<th>Action</th>
+									{% endif %}
 								</tr>
 							</thead>
 							<tbody>
@@ -126,11 +138,13 @@
 										<td>{{ forloop.counter }}</td>
 										<td>{{ part_Obj.participation_type.name }}</td>
                                         <td>{{ part_Obj.member.user.full_name }}</td>
+										{% if request.session.SelectedClub.2 %}
 										<td>
 											<a data-partid="{{ part_Obj.id }}" data-memid="{{ part_Obj.member.id }}" data-parttype="{{ part_Obj.participation_type.id }}" data-toggle="modal" data-target="#createUpdatePartModal"><i class="far fa-edit"></i></a>
 											&nbsp&nbsp&nbsp
 											<a data-toggle="modal" data-target="#DeletePrompt" data-id="{{ part_Obj.id }}"><i class="far fa-trash-alt" style="color: maroon"></i></a>
 										</td>
+										{% endif %}
 										</tr>
 								{% endfor %}
 							</tbody>
@@ -157,7 +171,9 @@
 									<th>Member Name</th>
 									<th style="display: none">Paid Status</th>
 									<th>Present</th>
+									{% if request.session.SelectedClub.2 %}
 									<th>Actions</th>
+									{% endif %}
 								</tr>
 							</thead>
 							<tbody>
@@ -170,6 +186,7 @@
 											{% if att_record.present %}<i class="fas fa-check"></i> Present{% endif %}
 											{% if att_record.present == False %}<i class="fas fa-times"></i> Absent{% endif %}
 										</td>
+										{% if request.session.SelectedClub.2 %}
 										<td id = "actions-{{ att_record.pk }}">
 <!--											<a onClick="ToggleAttendance({{ att_record.pk }})">-->
 <!--												{% if att_record.present %}Mark Absent{% endif %}-->
@@ -180,6 +197,7 @@
 												{% if att_record.present == False %}Mark <i class="fas fa-check"></i>{% endif %}
 											</button>
 										</td>
+										{% endif %}
 										</tr>
 								{% endfor %}
 							</tbody>

@@ -68,6 +68,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             groups_str = groups_str + ' ' + user_group.name + ','
         return groups_str
 
+    def get_clubs(self):
+        mems = Member.objects.select_related('club').filter(user=self, active=True, paid_status=True)
+        clubs = [mem.club for mem in mems]
+        return clubs
+
     def is_member(self, club_id):
         try:
             Member.objects.get(user=self, club_id=club_id, active=True, paid_status=True)
@@ -384,17 +389,26 @@ class Participation(models.Model):
 
         super(Participation, self).save(*args, **kwargs)
 
-    def get_participation_count(members_list):
+    def get_participation_count(members_list, start_date=None, end_date=None):
         mems = [str(mem) for mem in members_list]
-        data = Participation.objects.raw('SELECT member_main.id, (SELECT count(member.id)\
- FROM smarttm_web_member member LEFT JOIN smarttm_web_attendance attendance on member.id = attendance.member_id, smarttm_web_meeting meeting\
- WHERE meeting.id = attendance.meeting_id and attendance.present = 1 and member.id = member_main.id) as TotalAttendance, \
-(SELECT COUNT(DISTINCT(CONCAT(part.member_id, "_", part.meeting_id)))\
- FROM smarttm_web_member member LEFT JOIN smarttm_web_participation part on member.id = part.member_id, smarttm_web_meeting meeting\
- WHERE meeting.id = part.meeting_id and member.id = member_main.id) as TotalParticipations\
- FROM `smarttm_web_member` member_main\
- WHERE member_main.id IN (%s)' % ','.join(mems))
-
+        if start_date is not None and end_date is not None:
+            data = Participation.objects.raw('SELECT member_main.id, (SELECT count(member.id)\
+     FROM smarttm_web_member member LEFT JOIN smarttm_web_attendance attendance on member.id = attendance.member_id, smarttm_web_meeting meeting\
+     WHERE meeting.id = attendance.meeting_id and attendance.present = 1 and member.id = member_main.id AND meeting.meeting_date BETWEEN "%s" AND "%s") as TotalAttendance, \
+    (SELECT COUNT(DISTINCT(CONCAT(part.member_id, "_", part.meeting_id)))\
+     FROM smarttm_web_member member LEFT JOIN smarttm_web_participation part on member.id = part.member_id, smarttm_web_meeting meeting\
+     WHERE meeting.id = part.meeting_id and member.id = member_main.id AND meeting.meeting_date BETWEEN "%s" AND "%s") as TotalParticipations\
+     FROM `smarttm_web_member` member_main\
+     WHERE member_main.id IN (%s)' % (start_date, end_date, start_date, end_date, ','.join(mems)))
+        else:
+            data = Participation.objects.raw('SELECT member_main.id, (SELECT count(member.id)\
+                 FROM smarttm_web_member member LEFT JOIN smarttm_web_attendance attendance on member.id = attendance.member_id, smarttm_web_meeting meeting\
+                 WHERE meeting.id = attendance.meeting_id and attendance.present = 1 and member.id = member_main.id) as TotalAttendance, \
+                (SELECT COUNT(DISTINCT(CONCAT(part.member_id, "_", part.meeting_id)))\
+                 FROM smarttm_web_member member LEFT JOIN smarttm_web_participation part on member.id = part.member_id, smarttm_web_meeting meeting\
+                 WHERE meeting.id = part.meeting_id and member.id = member_main.id) as TotalParticipations\
+                 FROM `smarttm_web_member` member_main\
+                 WHERE member_main.id IN (%s)' % ','.join(mems))
         return data
     def __str__(self):
         return str(self.meeting.meeting_date)+str(self.meeting.club.name) + '__' + str(self.participation_type.name)
