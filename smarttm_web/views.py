@@ -121,7 +121,6 @@ def import_members(request, club_id):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
-@query_debugger
 @login_required()
 @request_passes_test(user_is_member)
 def club_ranking(request, club_id):

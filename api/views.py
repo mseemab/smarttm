@@ -241,6 +241,10 @@ class ParticipationObj(APIView):
                                                 club_id = int(request.POST.get('club_id'))
                                                 )
             part.save()
+            att_obj = Attendance.objects.get(meeting_id = int(request.POST.get('meeting_id')),
+                                                member_id = int(request.POST.get('member_id')))
+            att_obj.present = True
+            att_obj.save()
             return Response({
                 'status': 'success'
             })
