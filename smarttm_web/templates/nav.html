@@ -10,7 +10,19 @@
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item {% if request.resolver_match.url_name == 'club_rankings' %}active{% endif %}" ><a href="{% url 'club_rankings' club_id=request.session.SelectedClub.0 %}" class="nav-link">Rankings</a></li>
         <li class="nav-item {% if request.resolver_match.url_name == 'club_meetings' %}active{% endif %}"><a  class="nav-link" href="{% url 'club_meetings' club_id=request.session.SelectedClub.0 %}">Meetings</a></li>
-        <li class="nav-item {% if request.resolver_match.url_name == 'club_members' %}active{% endif %}"><a  class="nav-link"  href="{% url 'club_members' club_id=request.session.SelectedClub.0 %}">Club Management </a></li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'club_members' %}active{% endif %}"><a  class="nav-link"  href="{% url 'club_members' club_id=request.session.SelectedClub.0 %}">Club Management</a></li>
+        <li class="nav-item {% if request.resolver_match.url_name == 'club_requests' or request.resolver_match.url_name == 'user_requests' or request.resolver_match.url_name == 'pending_requests' %}active{% endif %} dropdown">
+            <a class="nav-link dropdown-toggle"  href="#" data-toggle="dropdown">Requests Management</a>
+            <div class="dropdown-menu">
+                {% if request.session.SelectedClub.2 %}
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'pending_requests' %}active{% endif %}" href="{% url 'pending_requests' club_id=request.session.SelectedClub.0 %}">Pending Requests</a>
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'club_requests' %}active{% endif %}" href="{% url 'club_requests' club_id=request.session.SelectedClub.0 %}">All Requests</a>
+                {% endif %}
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'user_requests' %}active{% endif %}" href="{% url 'user_requests' club_id=request.session.SelectedClub.0 %}">My Requests</a>
+                <a class="dropdown-item {% if request.resolver_match.url_name == 'club_requests_new' %}active{% endif %}" href="{% url 'club_requests_new' club_id=request.session.SelectedClub.0 %}">Submit Request</a>
+            </div>
+        </li>
+
     </ul>
     <ul class="navbar-nav my-2 my-lg-0">
     <li class="nav-item dropdown">

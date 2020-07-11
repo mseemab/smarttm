@@ -28,16 +28,24 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.5/css/fixedHeader.dataTables.min.css">
         <link rel="stylesheet" href='{% static "css/custom.css" %}'>
+
         <title>{% block title %}{%endblock%}</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="">
         <meta name="author" content="">
-
+        <style>
+            input {
+            background-color: #e9ecef
+            }
+            .form-control {
+            background-color: #e9ecef
+            }
+        </style>
 
     </head>
-    <body>
+    <body style="background: #e9ecef">
     {% include "nav.html" %}
 
 

@@ -1,0 +1,42 @@
+{% extends "basefile.html" %}
+{% block title %}Request Slot - SMARTTM{%endblock%}
+{% block body_block%}
+	<br><br>
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+			<div class="well" style="width:">
+				<center><h3>Request a slot</h3></center>
+
+				<form method="post" action="{% url 'club_requests_new' club_id=request.session.SelectedClub.0 %}" >
+
+				<hr>
+				  {% csrf_token %}
+				  Request Type:<br>
+				  <select class="form-control" id="participationSelect" name="part_type_id">
+									<option disabled selected value="0"> -- select a participation type -- </option>
+									{% for part_type in part_types %}
+										<option value="{{ part_type.id }}">{{ part_type.name }}</option>
+									{% endfor %}
+                  </select>
+				  <br><br>
+                    Requested Date:<br>
+				  <input type="date" name="request_date" id="request_date" class="form-control" required >
+
+				  <br>
+
+				  <br>
+				  <div style="float:right;">
+					  <button type="submit" class="btn btn-primary" ><i class="fa fa-send"></i> Submit</button>
+					  <button type="reset"  class="btn btn-secondary" ><i class="fa fa-refresh"></i> Reset</button>
+				  </div>
+				  <br>
+
+				  <br>
+				</form>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"></div>
+	</div>
+
+{% endblock %}

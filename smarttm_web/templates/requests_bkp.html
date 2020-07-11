@@ -1,0 +1,131 @@
+{% extends "basefile.html" %}
+
+
+{% block title %}Manage Club - SMARTTM {%endblock%}
+{% block body_block%}
+
+
+<div class="container-fluid" >
+    <br><br>
+			<div class="row">
+				<div class="col-sm">
+					<h3>Club Requests Management</h3>
+				</div>
+            </div>
+    <hr>
+    <br>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="btn-group-vertical mt-3" role="group" aria-label="Basic example" style="width:90%">
+			<button type="button" class="btn btn-white {% if request.resolver_match.url_name == 'club_requests' %}active{% endif %} btn-block text-left"><span>All Requests<span class="badge badge-pill badge-primary float-right">{{ all_count }}</span></span></button>
+            <button type="button" class="btn btn-white btn-block text-left {% if request.resolver_match.url_name == 'user_requests' %}active{% endif %}"><span>My Requests<span class="badge badge-pill badge-primary float-right">{{ my_count }}</span></span></button>
+            <button type="button" class="btn btn-white btn-block text-left {% if request.resolver_match.url_name == 'pending_requests' %}active{% endif %}"><span>Pending Requests<span class="badge badge-pill badge-primary float-right">{{ pending_count }}</span></span></button>
+
+            </div>
+            </div>
+
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h4 class="mt-4">Pending Requests</h4>
+                </div>
+
+                <div class="col-sm-4 float-right md-form pr-5 mt-0 mb-2">
+                    <span>Filter Date:</span>
+					<input type="date" class="form-control" id="filter-date">
+                </div>
+
+            </div>
+            <div class="row table-responsive">
+                <table id="requests-table" class="display table table-bordered table-sm mr-5">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Requester</th>
+                        <th>Participation Type</th>
+                        <th>Requested Date</th>
+                        <th style="display: none">Requested Date Formatted</th>
+                        <th>Status</th>
+                        {% if request.session.SelectedClub.2 %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+					<tbody>
+					{% for req in reqs %}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td>{{ req.member.user }}</td>
+						<td>{{ req.participation_type.name }}</td>
+						<td>{{ req.requested_date }}</td>
+                        <td style="display: none">{{ req.requested_date|date:'Y-m-d'}}</td>
+                        <td>{{ req.status }}</td>
+                        {% if request.session.SelectedClub.2 %}
+						<td><button class="btn btn-sm btn-primary" onclick="assigned({{ req.id }})">Assign</button></td>
+                        {% endif %}
+					</tr>
+					{% endfor %}
+					</tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $.fn.dataTable.ext.search.push(
+		function( settings, data, dataIndex ) {
+			let filterDate = $("#filter-date").val()
+			let requestDate = data[4]
+            console.log(filterDate)
+            console.log(requestDate)
+            if (filterDate=="")
+            {
+                return true;
+            }
+			if (filterDate==requestDate)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+
+		}
+	);
+
+    $(document).ready(function() {
+			let table = $('#requests-table').DataTable({
+				'bPaginate': false,
+				'paging': false,
+				'info': false,
+				'dom': 't'
+			});
+			$("#filter-date").change(function() {
+			console.log("filter-date changed")
+				table.draw()
+			})
+			});
+
+	function assigned(reqId){
+        $.ajax({
+                headers:  {'X-CSRFToken': '{{ csrf_token }}'},
+				data: {csrfmiddlewaretoken: '{{ csrf_token }}',
+				 status: 'Assigned'},
+				url: "/api/requests/"+reqId.toString()+"/",
+				type: 'PUT',
+				success: function(data){
+				if (data.status == 'success'){
+
+					alert('good work')
+				}
+				}
+			});
+	}
+
+</script>
+{%endblock%}

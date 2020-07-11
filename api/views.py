@@ -1,5 +1,5 @@
 from rest_framework import generics
-from smarttm_web.models import Participation, Participation_Type, Club, Member, User, Meeting, Attendance
+from smarttm_web.models import Participation, Participation_Type, Club, Member, User, Meeting, Attendance, Requests
 from smarttm_web.serializers import ParticipationSerializer, ParticipationTypeSerializer, ClubSerializer, \
     UserSerializer, MeetingSerializer, ParticipationSerializerForCat, MemberSerializer
 from rest_framework.views import APIView
@@ -260,6 +260,21 @@ class ParticipationObj(APIView):
             part.member_id=int(request.POST.get('member_id'))
             part.participation_type_id=int(request.POST.get('participation_type_id'))
             part.save()
+            return Response({
+                'status': 'success'
+            })
+        except:
+            return Response({
+                'status': 'failed'
+            })
+
+
+class Request_View(APIView):
+    def put(self, request, request_id):
+        try:
+            req = Requests.objects.get(id=request_id)
+            req.status = request.data['status']
+            req.save()
             return Response({
                 'status': 'success'
             })

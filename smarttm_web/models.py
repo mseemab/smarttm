@@ -476,3 +476,29 @@ class Member_Summary(models.Model):
     present_count = models.IntegerField(default=0)
     parts_count = models.IntegerField(default=0)
     meeting_part_count = models.IntegerField(default=0)
+
+class Requests(models.Model):
+    status_choices = [('Assigned', 'Assignment Completed'),
+                      ('Cancelled', 'Cancelled'),
+                      ('Unassigned', 'Pending Assignment')]
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    participation_type = models.ForeignKey(Participation_Type, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=status_choices)
+    requested_date = models.DateField('Requested Date', null=False, blank=False)
+    created_date = models.DateTimeField('Date Created', null=True, blank=True)
+    updated_date = models.DateTimeField('Date Updated', null=True, blank=True)
+    created_by = models.ForeignKey(User, related_name='request_created_by', on_delete=models.CASCADE,
+                                   null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='request_updated_by', on_delete=models.CASCADE,
+                                   null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.created_by = get_username() if self.created_by is None else self.created_by
+        self.updated_by = get_username()
+        self.created_date = timezone.now() if self.created_date is None else self.created_date
+        self.updated_date = timezone.now()
+        super(Requests, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.club.name + "__" + self.member.user.full_name + "__" + self.participation_type.name + "__" + str(self.requested_date)

@@ -26,7 +26,7 @@ SECRET_KEY = store.SECRET_KEY
 
 AUTH_USER_MODEL = 'smarttm_web.User'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 REST_FRAMEWORK = {

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from api.views import ParticipationTypesList, ClubListByUser, UserListByClub, MeetingDetail, \
     ParticipationDetail, CustomAuthToken, ParticipationListRoles, CatBasedParticipations, ToggleAttendance, \
-    ParticipationObj
+    ParticipationObj, Request_View
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -31,6 +31,7 @@ urlpatterns = [
     path('getcatparticipations/<int:member_pk>/<str:cat>/', CatBasedParticipations.as_view(), name = "get_cat_participations"),
     path('toggleattendance/<int:attendance_id>/', ToggleAttendance.as_view(), name = "toggle_attendance"),
     path('participation/<int:participation_id>/', ParticipationObj.as_view(), name = "delete_participation"),
+    path('requests/<int:request_id>/', Request_View.as_view(), name='requests'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger'),
     path('api-token-auth/', CustomAuthToken.as_view())
 ]

@@ -1,0 +1,123 @@
+{% extends "basefile.html" %}
+
+
+{% block title %}Manage Club - SMARTTM {%endblock%}
+{% block body_block%}
+
+
+<div class="container-fluid" >
+    <br><br>
+			<div class="row">
+				<div class="col-sm-8">
+                    {% if request.resolver_match.url_name == 'user_requests' %}
+					<h3>My Requests</h3>
+                    {% elif request.resolver_match.url_name == 'pending_requests' %}
+                    <h3>Pending Requests</h3>
+                    {% else %}
+                    <h3>Club Requests</h3>
+                    {% endif %}
+				</div>
+                <div class="col-sm-4 float-right md-form pr-5 mt-0 mb-2">
+                    <span>Filter Date:</span>
+					<input type="date" class="form-control" id="filter-date">
+                </div>
+            </div>
+    <hr>
+    <br>
+    <div class="row">
+            <div class="container-fluid table-responsive">
+                <table id="requests-table" class="display table table-bordered table-sm mr-5">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Requester</th>
+                        <th>Participation Type</th>
+                        <th>Requested Date</th>
+                        <th style="display: none">Requested Date Formatted</th>
+                        <th>Status</th>
+                        {% if request.session.SelectedClub.2 %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+					<tbody>
+					{% for req in reqs %}
+					<tr id="req-{{ req.id }}">
+						<td>{{ forloop.counter }}</td>
+						<td>{{ req.member.user }}</td>
+						<td>{{ req.participation_type.name }}</td>
+						<td>{{ req.requested_date }}</td>
+                        <td style="display: none">{{ req.requested_date|date:'Y-m-d'}}</td>
+                        <td>{{ req.status }}</td>
+                        {% if request.session.SelectedClub.2 %}
+						<td>
+                            {% if req.status == 'Unassigned' %}
+                            <button class="btn btn-sm btn-primary" onclick="assigned({{ req.id }})">Assign</button></td>
+                            {% endif %}
+                        {% endif %}
+					</tr>
+					{% endfor %}
+					</tbody>
+                </table>
+            </div>
+
+
+        </div>
+</div>
+
+<script>
+
+    $.fn.dataTable.ext.search.push(
+		function( settings, data, dataIndex ) {
+			let filterDate = $("#filter-date").val()
+			let requestDate = data[4]
+            console.log(filterDate)
+            console.log(requestDate)
+            if (filterDate=="")
+            {
+                return true;
+            }
+			if (filterDate==requestDate)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+
+		}
+	);
+
+    $(document).ready(function() {
+			let table = $('#requests-table').DataTable({
+				'bPaginate': false,
+				'dom': 't'
+			});
+			$("#filter-date").change(function() {
+			console.log("filter-date changed")
+				table.draw()
+			})
+			});
+
+	function assigned(reqId){
+        $.ajax({
+                headers:  {'X-CSRFToken': '{{ csrf_token }}'},
+				data: {csrfmiddlewaretoken: '{{ csrf_token }}',
+				 status: 'Assigned'},
+				url: "/api/requests/"+reqId.toString()+"/",
+				type: 'PUT',
+				success: function(data){
+				if (data.status == 'success'){
+
+					$('#req-'+reqId.toString()).hide()
+				}
+				else {
+				    alert('Some error occurred. Please contact administrator')
+				}
+				}
+			});
+	}
+
+</script>
+{%endblock%}
